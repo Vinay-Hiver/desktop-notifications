@@ -130,7 +130,7 @@ function App() {
     // Each route/page sets its own title (e.g. SettingsPage). Only own the
     // mailbox title here so this always-mounted component doesn't clobber it.
     if (location.pathname === '/') {
-      document.title = 'Desktop Notifications';
+      document.title = 'Desktop Notifications - Omni';
     }
   }, [location.pathname]);
 
