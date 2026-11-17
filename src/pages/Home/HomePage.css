@@ -2,17 +2,22 @@
 .home-shell { display: flex; flex-direction: column; height: 100%; }
 .home-shell__main { flex: 1; min-height: 0; }
 
-.home-banner { display: flex; align-items: center; gap: var(--spacing2); min-height: 44px; box-sizing: border-box; padding: var(--spacing15) var(--spacing4); font: var(--text-body-sm-regular); border-bottom: 1px solid transparent; }
-.home-banner svg { flex: none; }
-.home-banner__text { flex: 1; min-width: 0; }
-.home-banner--info { background: var(--primarySurfaceSubtle); color: var(--slateTextBody); border-color: var(--primaryBorderSubtle); }
-.home-banner--info > svg { color: var(--primaryTextLabel); }
-.home-banner--success { background: var(--successSurfaceSubtle); color: var(--successTextBody); border-color: var(--successBorderLight); }
-.home-banner--success strong { color: var(--successTextTitle); }
-.home-banner--warning { background: var(--warningSurfaceSubtle); color: var(--warningTextBody); border-color: var(--warningBorderLight); }
-.home-banner--warning strong { color: var(--warningTextTitle); }
-.home-banner__link { padding: 0; border: 0; background: none; cursor: pointer; font: var(--text-body-sm-medium); color: var(--primaryTextLabel); text-decoration: none; white-space: nowrap; }
-.home-banner__link:hover { text-decoration: underline; }
+/* Banner — Figma "Enable notifications from banner" (17:16251) */
+.home-banner { position: relative; display: flex; align-items: center; justify-content: center; padding: 8px 48px 8px 12px; border-bottom: 0.5px solid var(--blueBorderLight); font: var(--text-body-md-medium); color: var(--slateTextBody); }
+.home-banner--info { background: var(--blueSurfaceSubtle); }
+.home-banner--success { background: var(--successSurfaceSubtle); }
+.home-banner--error { background: var(--errorSurfaceSubtle); }
+.home-banner__content { display: flex; align-items: center; gap: 12px; min-width: 0; flex-wrap: wrap; justify-content: center; }
+.home-banner__msg { display: flex; align-items: center; gap: 8px; }
+.home-banner__msg img, .home-banner__link img, .home-banner__close img { flex: none; display: block; }
+.home-banner__btn { height: 32px; padding: 4px 12px; border: 1px solid var(--primaryBorderLighter); border-radius: 6px; background: transparent; font: var(--text-body-md-medium); color: var(--pastelLightBlueTextTitle); cursor: pointer; white-space: nowrap; }
+.home-banner__btn:hover:not(:disabled) { background: var(--pastelLightBlueSurfaceMild); }
+.home-banner__btn:disabled { opacity: 0.6; cursor: default; }
+.home-banner__link { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 4px 12px; border: 0; background: none; cursor: pointer; font: var(--text-body-md-medium); text-decoration: underline; white-space: nowrap; }
+.home-banner--success .home-banner__link { color: var(--successTextTitle); }
+.home-banner--error .home-banner__link { color: var(--errorTextTitle); }
+.home-banner__close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; padding: 4px; border: 0; border-radius: 6px; background: none; cursor: pointer; }
+.home-banner__close:hover { background: color-mix(in srgb, var(--slateTextBody) 8%, transparent); }
 
 .home-content { display: flex; height: 100%; min-height: 0; }
 .home-content__list { width: 320px; flex: none; border-right: 1px solid var(--slateBorderLight); overflow: auto; }
@@ -21,3 +26,4 @@
 /* Prototype-only control */
 .home-proto { position: fixed; right: var(--spacing4); bottom: var(--spacing4); display: flex; align-items: center; gap: var(--spacing2); padding: var(--spacing1) var(--spacing1) var(--spacing1) var(--spacing3); border-radius: var(--radius8); background: var(--slateSurfaceWhite); border: 1px dashed var(--slateBorderDark); z-index: 10; }
 .home-proto__title { font: var(--text-body-xs-semibold); color: var(--slateTextSubtle); text-transform: uppercase; letter-spacing: 0.04em; }
+.home-shell__main .app-container { height: 100%; width: 100%; }

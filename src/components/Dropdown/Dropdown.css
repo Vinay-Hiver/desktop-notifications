@@ -5,11 +5,11 @@
   flex-direction: column;
   width: 260px;
   max-width: 100%;
-  border-radius: var(--radius8);
+  border-radius: 8px;
   background: var(--slateSurfaceWhite);
   /* 0.5px border and soft drop shadow */
   box-shadow: inset 0 0 0 0.5px var(--slateBorderMild), 0 4px 12px var(--slateBorderLight);
-  font: var(--text-body-md-regular);
+  font: var(--fontWeightRegular) 14px/20px var(--fontFamily);
   color: var(--slateTextBody);
 }
 
@@ -20,9 +20,9 @@
   display: flex;
   align-items: center;
   flex: none;
-  height: var(--spacing10);
-  padding: var(--spacing2) var(--spacing3);
-  font: var(--text-body-lg-medium);
+  height: 40px;
+  padding: 8px 12px;
+  font: var(--fontWeightMedium) 16px/24px var(--fontFamily);
   color: var(--slateTextBody);
 }
 .hot-dropdown__title::after {
@@ -31,35 +31,35 @@
   left: 0;
   right: 0;
   bottom: -1px;
-  height: var(--spacing0);
+  height: 1px;
   background: var(--slateBorderMild);
 }
 
 /* Search area: 8px above the box (under the title, or from the top of the panel), 8px at the sides, and nothing below it: the 6px under the search box comes from the list. The box is as wide as the option rows (8px in from each side). */
-.hot-dropdown__search { box-sizing: border-box; flex: none; padding: var(--spacing2) var(--spacing2) 0; }
+.hot-dropdown__search { box-sizing: border-box; flex: none; padding: 8px 8px 0; }
 
-/* An avatar sits in the same place as a checkbox, radio or icon: those are 14px marks centred in a 24px area, so they start about 5px in; the offsets below are snapped to the 4px token. The avatar (and an icon on a round fill) fills the whole 24px, so it gets 4px of space on its left to match. */
-.hot-dropdown .hot-list-el:has(> .hot-avatar), .hot-dropdown .hot-list-icon--round { margin-left: var(--spacing1); }
+/* An avatar sits in the same place as a checkbox, radio or icon: those are 14px marks centred in a 24px area, so they start 5px in. The avatar (and an icon on a round fill) fills the whole 24px, so it gets 5px of space on its left to match. */
+.hot-dropdown .hot-list-el:has(> .hot-avatar), .hot-dropdown .hot-list-icon--round { margin-left: 5px; }
 
-/* The gap you see between the mark and the text is 10px for every row style. Checkboxes, radios and icons are 14px marks centred in a 24px area (about 5px of space inside on each side), so they need 4px more; avatars, round icons and flags fill more of the area. */
-.hot-dropdown .hot-list-item--compact .hot-list-item__main { gap: var(--spacing1); }
-.hot-dropdown .hot-list-item--compact .hot-list-item__main:is(:has(> .hot-list-el > .hot-avatar), :has(> .hot-list-icon--round)) { gap: var(--spacing25); }
-.hot-dropdown .hot-list-item--compact .hot-list-item__main:has(> .hot-country-list__flag) { gap: var(--spacing15); }
+/* The gap you see between the mark and the text is 10px for every row style. Checkboxes, radios and icons are 14px marks centred in a 24px area (5px of space inside on each side), so they need 5px more; avatars, round icons and flags fill more of the area. */
+.hot-dropdown .hot-list-item--compact .hot-list-item__main { gap: 5px; }
+.hot-dropdown .hot-list-item--compact .hot-list-item__main:is(:has(> .hot-list-el > .hot-avatar), :has(> .hot-list-icon--round)) { gap: 10px; }
+.hot-dropdown .hot-list-item--compact .hot-list-item__main:has(> .hot-country-list__flag) { gap: 6px; }
 
-/* A mark sits about 9px inside its row on the left (4px of row padding + about 5px of centring in its 24px area). The tick on the right gets 4px and a text-only row gets 8px of left padding. */
-.hot-dropdown .hot-list-item--compact .hot-list-item__trailing { margin-right: var(--spacing1); }
-.hot-dropdown .hot-list-item--compact.hot-list-item--no-leading { padding-left: var(--spacing2); }
+/* A mark sits 9px inside its row on the left (4px of row padding + 5px of centring in its 24px area). The tick on the right and the text of a text-only row get the same 9px. */
+.hot-dropdown .hot-list-item--compact .hot-list-item__trailing { margin-right: 5px; }
+.hot-dropdown .hot-list-item--compact.hot-list-item--no-leading { padding-left: 9px; }
 
 /* Options: 6px above (under the title or the search box, or the top edge of the panel), 8px at the sides and below */
 .hot-dropdown__list {
   box-sizing: border-box;
   margin: 0;
-  padding: var(--spacing15) var(--spacing2) var(--spacing2);
+  padding: 6px 8px 8px;
   list-style: none;
-  max-height: var(--spacing64);
+  max-height: 264px;
   overflow-y: auto;
 }
-.hot-dropdown__empty { padding: var(--spacing2); color: var(--slateTextSubtle); }
+.hot-dropdown__empty { padding: 8px; color: var(--slateTextSubtle); }
 
 /* Footer: 48px with a 1px line on top */
 .hot-dropdown__actions {
@@ -67,13 +67,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing3);
+  gap: 12px;
   flex: none;
-  height: var(--spacing12);
-  padding: 0 var(--spacing2);
+  height: 48px;
+  padding: 0 8px;
   border-top: 1px solid var(--slateBorderMild);
 }
-.hot-dropdown--no-search .hot-dropdown__actions { padding: 0 var(--spacing3); }
+.hot-dropdown--no-search .hot-dropdown__actions { padding: 0 12px; }
 
 /* The cancel button in this panel is a soft grey fill with no border */
 .hot-dropdown__actions .hot-btn--secondary {
@@ -88,12 +88,12 @@
 .hot-dropdown__grip {
   position: absolute;
   top: 50%;
-  right: var(--spacing2);
+  right: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--iconSizeSm);
-  height: var(--iconSizeSm);
+  width: 16px;
+  height: 16px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -105,7 +105,7 @@
   touch-action: none;
 }
 .hot-dropdown__grip:active { cursor: grabbing; }
-.hot-dropdown__grip:focus-visible { opacity: 1; outline: var(--spacing05) solid var(--primaryBorderDefault); }
+.hot-dropdown__grip:focus-visible { opacity: 1; outline: 2px solid var(--primaryBorderDefault); }
 .hot-dropdown__row:hover .hot-dropdown__grip,
 .hot-dropdown__row--dragging .hot-dropdown__grip { opacity: 1; }
-.hot-dropdown__row--dragging { background: var(--slateSurfaceWhite); border-radius: var(--radius8); box-shadow: 0 4px 12px color-mix(in srgb, var(--slateTextTitle) 12%, transparent); }
+.hot-dropdown__row--dragging { background: var(--slateSurfaceWhite); border-radius: 8px; box-shadow: 0 4px 12px color-mix(in srgb, var(--slateTextTitle) 12%, transparent); }

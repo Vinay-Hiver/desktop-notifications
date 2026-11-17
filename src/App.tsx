@@ -1,13 +1,30 @@
-import { useState } from 'react'
+import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
+import OmniApp from './omni/App.jsx'
 import { HomePage } from './pages/Home'
 import { NotificationSettingsPage } from './pages/NotificationSettings'
 
-/** The prototype starts on the home page; the banner and account menu lead to My Settings > Notifications Settings. */
-export default function App() {
-  const [page, setPage] = useState<{ name: 'home' } | { name: 'settings'; tab?: 'sounds' | 'desktop' }>({ name: 'home' })
+/** Notification settings sit on their own route; everything else is the Omni app with the desktop notifications banner on top. */
+function SettingsRoute() {
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const tab = params.get('tab') === 'desktop' ? 'desktop' : params.get('tab') === 'sounds' ? 'sounds' : undefined
+  return <NotificationSettingsPage key={tab ?? 'any'} initialTab={tab} onNavigate={() => navigate('/')} />
+}
 
-  if (page.name === 'settings') {
-    return <NotificationSettingsPage key={page.tab ?? 'any'} initialTab={page.tab} onNavigate={() => setPage({ name: 'home' })} />
-  }
-  return <HomePage onOpenDesktopSettings={() => setPage({ name: 'settings', tab: 'desktop' })} onOpenSettings={() => setPage({ name: 'settings' })} />
+function HomeRoute() {
+  const navigate = useNavigate()
+  return (
+    <HomePage onOpenDesktopSettings={() => navigate('/notifications?tab=desktop')}>
+      <OmniApp />
+    </HomePage>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/notifications" element={<SettingsRoute />} />
+      <Route path="*" element={<HomeRoute />} />
+    </Routes>
+  )
 }

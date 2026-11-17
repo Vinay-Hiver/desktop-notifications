@@ -235,8 +235,8 @@ export type RightPanelSectionProps = {
   id: string
   /** The section name, for example "Contact". */
   title: string
-  /** The icon before the name. */
-  icon: IconName
+  /** The icon before the name: a HOT icon name, or a 16px icon element for one the HOT set does not have. */
+  icon: IconName | ReactElement
   /** The section's rows. Shown when the section is open. */
   children?: ReactNode
   /** Starts open when set. Used when the section manages itself. */
@@ -268,7 +268,7 @@ export function RightPanelSection({ title, icon, children, defaultExpanded = fal
           </button>
         )}
         <button type="button" className="hot-rp-section__toggle" aria-expanded={open} aria-controls={bodyId} onClick={toggle}>
-          <span className="hot-rp-section__icon"><Icon name={icon} size={16} /></span>
+          <span className="hot-rp-section__icon">{typeof icon === 'string' ? <Icon name={icon} size={16} /> : icon}</span>
           <span className="hot-rp-section__title">{title}</span>
           <span className="hot-rp-section__chevron" aria-hidden="true"><Icon name="chevronright" size={16} /></span>
         </button>

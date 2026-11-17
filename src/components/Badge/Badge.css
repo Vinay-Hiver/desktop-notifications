@@ -4,9 +4,9 @@
   display: inline-flex;
   align-items: center;
   height: 18px;
-  padding: 0 var(--spacing15);
-  border-radius: var(--radius12);
-  font: var(--text-body-xs-regular);
+  padding: 0 6px;
+  border-radius: 12px;
+  font: var(--fontWeightRegular) 12px/18px var(--fontFamily);
   white-space: nowrap;
 }
 .hot-badge--default { background: var(--slateSurfaceSubtle100Hover); color: var(--slateTextBody); }

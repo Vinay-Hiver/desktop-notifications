@@ -41,7 +41,7 @@ export function browserLabel() {
 export const HELP_BASE = 'https://help.hiverhq.com/desktop-notifications'
 export function helpLink() {
   const b = detectBrowser()
-  return { href: b ? `${HELP_BASE}#${b.slug}` : HELP_BASE, label: b ? `Learn how to enable notifications in ${b.name}` : 'Learn how to enable notifications in your browser' }
+  return { href: b ? `${HELP_BASE}#${b.slug}` : HELP_BASE, label: b ? `How to allow in ${b.name}` : 'How to allow in your browser' }
 }
 
 /** Asks for permission (real or simulated). Simulated "not asked yet" resolves to granted after a short pause. */
@@ -63,7 +63,7 @@ export function sendTestNotification(): 'sent' | 'simulated' {
   const sim = load<Simulation>('dn.simulation', 'real')
   if (sim === 'real' && readPermission() === 'granted') {
     new Notification('Desktop notifications are on', {
-      body: "You'll see calls and messages here when Omni isn't in front.",
+      body: "You'll see calls and messages here even when Hiver is in the background.",
       icon: '/hiver-favicon.png',
       tag: 'omni-test',
     })

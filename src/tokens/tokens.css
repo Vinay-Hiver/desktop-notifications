@@ -347,11 +347,60 @@
   --slateIconsActive: var(--slate700);
   --slateIconsSubtle: var(--slate500);
   --slateIconsDisabled: var(--slate400);
+
+  /* Semantic tokens: default tone is Primary; switch with data-tone="error|warning|success" */
+  --surfaceSubtle: var(--blue50);
+  --surfaceLighter: var(--blue300);
+  --surfaceDefault: var(--blue500);
+  --surfaceDarker: var(--blue700);
+  --borderSubtle: var(--blue100);
+  --borderLighter: var(--blue300);
+  --borderDefault: var(--blue500);
+  --borderDarker: var(--blue700);
+  --textLabel: var(--blue700);
+}
+
+[data-tone="error"] {
+  --surfaceSubtle: var(--red50);
+  --surfaceLighter: var(--red300);
+  --surfaceDefault: var(--red500);
+  --surfaceDarker: var(--red700);
+  --borderSubtle: var(--red100);
+  --borderLighter: var(--red300);
+  --borderDefault: var(--red500);
+  --borderDarker: var(--red700);
+  --textLabel: var(--red700);
+}
+
+[data-tone="warning"] {
+  --surfaceSubtle: var(--orange50);
+  --surfaceLighter: var(--orange300);
+  --surfaceDefault: var(--orange500);
+  --surfaceDarker: var(--orange700);
+  --borderSubtle: var(--orange100);
+  --borderLighter: var(--orange300);
+  --borderDefault: var(--orange500);
+  --borderDarker: var(--orange700);
+  --textLabel: var(--orange700);
+}
+
+[data-tone="success"] {
+  --surfaceSubtle: var(--green50);
+  --surfaceLighter: var(--green300);
+  --surfaceDefault: var(--green500);
+  --surfaceDarker: var(--green700);
+  --borderSubtle: var(--green100);
+  --borderLighter: var(--green300);
+  --borderDefault: var(--green500);
+  --borderDarker: var(--green700);
+  --textLabel: var(--green700);
+}
+
+/* Restored from the earlier HOT tokens (spacing, radius, etc.) — the activity-notes tokens file lacked these. */
+:root {
   --primaryEffectFocus: #246fea4d;
   --slateEffectFocus: #73737333;
   --errorEffectFocus: #ef44444d;
-
-  /* Numeric: scale (px), then spacing, radius and icon-size aliasing the scale */
   --scale0: 0px;
   --scale1: 4px;
   --scale2: 8px;
@@ -436,51 +485,4 @@
   --iconSizeSm: var(--scale4);
   --iconSizeMd: var(--scale5);
   --iconSizeLg: var(--scale6);
-
-  /* Semantic tokens: default tone is Primary; switch with data-tone="error|warning|success" */
-  --surfaceSubtle: var(--blue50);
-  --surfaceLighter: var(--blue300);
-  --surfaceDefault: var(--blue500);
-  --surfaceDarker: var(--blue700);
-  --borderSubtle: var(--blue100);
-  --borderLighter: var(--blue300);
-  --borderDefault: var(--blue500);
-  --borderDarker: var(--blue700);
-  --textLabel: var(--blue700);
-}
-
-[data-tone="error"] {
-  --surfaceSubtle: var(--red50);
-  --surfaceLighter: var(--red300);
-  --surfaceDefault: var(--red500);
-  --surfaceDarker: var(--red700);
-  --borderSubtle: var(--red100);
-  --borderLighter: var(--red300);
-  --borderDefault: var(--red500);
-  --borderDarker: var(--red700);
-  --textLabel: var(--red700);
-}
-
-[data-tone="warning"] {
-  --surfaceSubtle: var(--orange50);
-  --surfaceLighter: var(--orange300);
-  --surfaceDefault: var(--orange500);
-  --surfaceDarker: var(--orange700);
-  --borderSubtle: var(--orange100);
-  --borderLighter: var(--orange300);
-  --borderDefault: var(--orange500);
-  --borderDarker: var(--orange700);
-  --textLabel: var(--orange700);
-}
-
-[data-tone="success"] {
-  --surfaceSubtle: var(--green50);
-  --surfaceLighter: var(--green300);
-  --surfaceDefault: var(--green500);
-  --surfaceDarker: var(--green700);
-  --borderSubtle: var(--green100);
-  --borderLighter: var(--green300);
-  --borderDefault: var(--green500);
-  --borderDarker: var(--green700);
-  --textLabel: var(--green700);
 }

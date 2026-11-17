@@ -1,6 +1,5 @@
 import { useId, useState } from 'react'
 import type { ChangeEvent, ReactNode, TextareaHTMLAttributes } from 'react'
-import type { IconName } from '../../icons/iconData'
 import { FormField } from '../Input/FormField'
 import type { ForcedState } from '../Input/FormField'
 import { TagsEditor } from '../Input/TagsEditor'
@@ -12,10 +11,6 @@ export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   helperText?: ReactNode
   /** Shows the error border and red helper text. */
   error?: boolean
-  /** Turns the helper text green with a tick before it. Ignored when `error` is set. */
-  success?: boolean
-  /** A 16px icon before the helper text, by name from the HOT icon set (for example `info`). */
-  helperIcon?: IconName
   /** Shows a live "0/500" counter. Needs `maxLength`. */
   showCount?: boolean
   /** Stretch to the width of the parent instead of 320px. */
@@ -30,7 +25,7 @@ export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 }
 
 export function Textarea({
-  label, helperText, error, success, helperIcon, showCount, fullWidth, forceState, tags, defaultTags, onTagsChange,
+  label, helperText, error, showCount, fullWidth, forceState, tags, defaultTags, onTagsChange,
   id: idProp, className, disabled, required, maxLength, value, defaultValue, onChange, ...rest
 }: TextareaProps) {
   const generated = useId()
@@ -52,7 +47,7 @@ export function Textarea({
 
   return (
     <FormField
-      id={id} label={label} required={required} error={error} success={success} helperIcon={helperIcon} disabled={disabled}
+      id={id} label={label} required={required} error={error} disabled={disabled}
       fullWidth={fullWidth} className={[className, tagsMode && 'hot-field--tags'].filter(Boolean).join(' ') || undefined} forceState={forceState} textarea
       helperText={count ? (
         <span style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>

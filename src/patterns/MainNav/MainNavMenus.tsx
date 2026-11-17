@@ -25,8 +25,10 @@ export const helpMenuEntries: MenuEntry[] = [
 export type UserMenuProps = {
   name: string
   email: string
-  /** The line under "Your availability", for example "Available on Chat, Email and Voice". */
-  availability: string
+  /** The line under "Your availability", for example "Available on Chat, Email and Voice". Leave it out to hide the availability row. */
+  availability?: string
+  /** The rows under the header. Defaults to the full account menu (`userMenuEntries`). */
+  entries?: MenuEntry[]
   onSelect?: (id: string) => void
 }
 
@@ -64,7 +66,7 @@ function OmniLogo() {
 }
 
 /** The menu that opens from the avatar at the bottom of the Main nav. */
-export function UserMenu({ name, email, availability, onSelect }: UserMenuProps): ReactNode {
+export function UserMenu({ name, email, availability, entries = userMenuEntries, onSelect }: UserMenuProps): ReactNode {
   return (
     <div className="hot-menu hot-menu--user" role="menu" aria-label="Account">
       <div className="hot-menu__header">
@@ -72,15 +74,15 @@ export function UserMenu({ name, email, availability, onSelect }: UserMenuProps)
         <div className="hot-menu__email">{email}</div>
       </div>
       <div className="hot-menu__rows">
-        <button type="button" role="menuitem" className="hot-menu__row hot-menu__row--availability" onClick={() => onSelect?.('availability')}>
+        {availability !== undefined && <button type="button" role="menuitem" className="hot-menu__row hot-menu__row--availability" onClick={() => onSelect?.('availability')}>
           <span className="hot-menu__icon"><Icon name="assigned" size={16} /></span>
           <span className="hot-menu__text">
             <span className="hot-menu__title">Your availability</span>
             <span className="hot-menu__sub">{availability}</span>
           </span>
           <span className="hot-menu__arrow"><Icon name="chevrondown" size={16} /></span>
-        </button>
-        {userMenuEntries.map((e) => <Row key={e.id} entry={e} onSelect={onSelect} />)}
+        </button>}
+        {entries.map((e) => <Row key={e.id} entry={e} onSelect={onSelect} />)}
       </div>
       <div className="hot-menu__footer"><OmniLogo /></div>
     </div>

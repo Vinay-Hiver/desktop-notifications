@@ -1,20 +1,19 @@
 import type { ConversationsSidebarSection, ConversationsSidebarView } from './ConversationsSidebar'
 import { channelViews, myWorkViews, personalViews, viewLibrary } from './data'
 import type { ViewChannelId } from './data'
-import { conversationCounts } from '../ConversationList/sampleData'
 
 /** Example inboxes and views, shared by the Conversations sidebar and Page layout stories. */
-// A personal view that shows a count has 1 conversation. An inbox view that shows a count has as many as the channel's dummy list in the Conversation list.
+// Every inbox view that shows a count has 1 conversation, so an inbox's total is the number of its counted views.
 const conversationsPerView = 1
 
 /** A list of views from the library, in the given order. The ids are prefixed so two inboxes never share one. */
-const viewsFor = (prefix: string, keys: string[], counts: boolean, perView = conversationsPerView): ConversationsSidebarView[] =>
+const viewsFor = (prefix: string, keys: string[], counts: boolean): ConversationsSidebarView[] =>
   keys.map((key) => {
     const v = viewLibrary[key]
-    return { id: `${prefix}-${v.id}`, label: v.label, icon: v.icon, count: counts && v.hasCount ? perView : undefined }
+    return { id: `${prefix}-${v.id}`, label: v.label, icon: v.icon, count: counts && v.hasCount ? conversationsPerView : undefined }
   })
 
-const inboxViews = (channel: ViewChannelId, counts: boolean): ConversationsSidebarView[] => viewsFor(channel, channelViews[channel], counts, conversationCounts[channel])
+const inboxViews = (channel: ViewChannelId, counts: boolean): ConversationsSidebarView[] => viewsFor(channel, channelViews[channel], counts)
 
 // Example counts for the My Work queues (Figma shows 5 and 99+).
 const myWorkCounts: Record<string, number> = { liveQueue: 5, standardQueue: 150 }
@@ -24,7 +23,7 @@ export const sampleSections = (counts: boolean, open: string[] = []): Conversati
   {
     title: 'Shared Inbox',
     items: [
-      { id: 'chat', label: 'Website Chat', icon: 'chatinbox', views: inboxViews('chat', counts), defaultExpanded: open.includes('chat') },
+      { id: 'chat', label: 'Chat inbox 01', icon: 'chatinbox', views: inboxViews('chat', counts), defaultExpanded: open.includes('chat') },
       { id: 'slack', label: 'Slack', icon: 'slack', views: inboxViews('slack', counts), defaultExpanded: open.includes('slack') },
       { id: 'whatsapp', label: 'WhatsApp', icon: 'whatsapp', views: inboxViews('whatsapp', counts), defaultExpanded: open.includes('whatsapp') },
       { id: 'sms', label: 'SMS', icon: 'sms', views: inboxViews('sms', counts), defaultExpanded: open.includes('sms') },
