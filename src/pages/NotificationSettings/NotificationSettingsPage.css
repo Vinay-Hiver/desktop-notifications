@@ -1,0 +1,68 @@
+/* My Settings > Notifications Settings with desktop notifications. Colours use tokens only. */
+.dn-page { display: flex; flex-direction: column; height: 100%; overflow: auto; background: var(--slateSurfaceWhite); }
+.dn-body { display: flex; flex-direction: column; gap: var(--spacing5); padding: var(--spacing5); max-width: 760px; }
+
+/* Cards */
+.dn-card { border: 1px solid var(--slateBorderLight); border-radius: var(--radius8); padding: var(--spacing2) var(--spacing5) var(--spacing4); background: var(--slateSurfaceWhite); }
+
+/* Setting rows */
+.dn-row { display: flex; align-items: flex-start; gap: var(--spacing3); padding: var(--spacing3) 0; }
+.dn-row + .dn-row { border-top: 1px solid var(--slateBorderLight); }
+.dn-row__icon { display: inline-flex; padding-top: 2px; color: var(--slateIconsSubtle); }
+.dn-row__text { flex: 1; min-width: 0; }
+.dn-row__title { font: var(--text-body-md-regular); color: var(--slateTextBody); }
+.dn-row__title--strong { font: var(--text-body-lg-medium); color: var(--slateTextTitle); }
+.dn-row__desc { margin-top: 2px; font: var(--text-body-sm-regular); color: var(--slateTextSubtle); }
+.dn-row__control { flex: none; padding-top: 2px; }
+
+/* Groups inside a card */
+.dn-group { margin-top: var(--spacing3); padding-top: var(--spacing3); border-top: 1px solid var(--slateBorderLight); }
+.dn-group__head { padding-bottom: var(--spacing1); }
+.dn-group__head--icon { display: flex; align-items: center; gap: var(--spacing2); color: var(--slateIconsSubtle); }
+.dn-group__title { margin: 0; font: var(--text-body-md-semibold); color: var(--slateTextTitle); }
+.dn-group__desc { margin: 2px 0 0; font: var(--text-body-sm-regular); color: var(--slateTextSubtle); }
+.dn-group .dn-row { padding-left: var(--spacing1); }
+
+/* Status line when on */
+.dn-status { display: flex; align-items: center; gap: var(--spacing2); margin-top: var(--spacing1); padding: var(--spacing25) var(--spacing3); border-radius: var(--radius8); background: var(--slateSurfaceSubtle); }
+.dn-status__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--successSurfaceDark); flex: none; }
+.dn-status__text { flex: 1; font: var(--text-body-sm-medium); color: var(--slateTextBody); }
+.dn-hint { margin-top: var(--spacing2); font: var(--text-body-sm-regular); color: var(--slateTextSubtle); }
+
+/* Inline notes */
+.dn-note { display: flex; align-items: flex-start; gap: var(--spacing2); margin: var(--spacing1) 0 var(--spacing2); padding: var(--spacing3); border-radius: var(--radius8); font: var(--text-body-sm-regular); }
+.dn-note svg { flex: none; margin-top: 2px; }
+.dn-note--neutral { background: var(--blueSurfaceSubtle); color: var(--blueTextBody); }
+.dn-note--warning { background: var(--warningSurfaceSubtle); border: 1px solid var(--warningBorderLight); color: var(--warningTextBody); }
+.dn-note--warning strong { color: var(--warningTextTitle); }
+.dn-note__body { display: flex; flex-direction: column; gap: var(--spacing2); }
+.dn-note__actions { display: flex; align-items: center; gap: var(--spacing3); }
+.dn-note a, .dn-banner a, .dn-footnote a { color: var(--primaryTextLabel); font-weight: 500; text-decoration: none; }
+.dn-note a:hover, .dn-banner a:hover, .dn-footnote a:hover { text-decoration: underline; }
+
+/* Alert preview */
+.dn-preview { display: flex; align-items: flex-start; gap: var(--spacing3); margin: var(--spacing1) 0 var(--spacing2) calc(var(--spacing1) + 28px); padding: var(--spacing3); max-width: 360px; border-radius: var(--radius12); background: var(--slateSurfaceSubtle200); border: 1px solid var(--slateBorderLight); }
+.dn-preview__icon { width: 28px; height: 28px; border-radius: var(--radius6); flex: none; }
+.dn-preview__text { min-width: 0; }
+.dn-preview__title { font: var(--text-body-sm-semibold); color: var(--slateTextTitle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dn-preview__site { font: var(--text-body-xs-regular); color: var(--slateTextSubtle); }
+.dn-preview__body { font: var(--text-body-sm-regular); color: var(--slateTextBody); }
+
+.dn-footnote { display: flex; gap: var(--spacing2); margin-top: var(--spacing3); padding-top: var(--spacing3); border-top: 1px solid var(--slateBorderLight); font: var(--text-body-xs-regular); color: var(--slateTextSubtle); }
+.dn-footnote svg { flex: none; margin-top: 2px; }
+
+/* Banners at the top of the page */
+.dn-banner { display: flex; align-items: center; gap: var(--spacing2); padding: var(--spacing2) var(--spacing5); font: var(--text-body-sm-regular); }
+.dn-banner__text { flex: 1; }
+.dn-banner--info { background: var(--primarySurfaceSubtle); color: var(--slateTextBody); }
+.dn-banner--info svg { color: var(--primaryTextLabel); }
+.dn-banner--warning { background: var(--warningSurfaceSubtle); color: var(--warningTextBody); }
+
+/* Prototype-only controls */
+.dn-proto { position: fixed; right: var(--spacing4); bottom: var(--spacing4); display: flex; flex-direction: column; gap: var(--spacing2); padding: var(--spacing3); border-radius: var(--radius8); background: var(--slateSurfaceWhite); border: 1px dashed var(--slateBorderDark); font: var(--text-body-xs-regular); color: var(--slateTextSubtle); z-index: 10; }
+.dn-proto__title { font: var(--text-body-xs-semibold); color: var(--slateTextBody); text-transform: uppercase; letter-spacing: 0.04em; }
+.dn-proto__row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing2); }
+.dn-proto select { font: inherit; padding: 2px 4px; }
+
+/* Tabs under the page bar */
+.dn-tabs { padding: 0 var(--spacing5); border-bottom: 1px solid var(--slateBorderLight); }
