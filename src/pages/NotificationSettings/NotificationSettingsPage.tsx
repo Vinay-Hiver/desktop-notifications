@@ -151,7 +151,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
       new Notification('Desktop notifications are on', {
         body: "You'll see calls and messages here even when Hiver is in the background.",
         icon: '/hiver-favicon.png',
-        tag: 'omni-test',
+        tag: `omni-test-${Date.now()}`, // a new tag each time, so a repeat test pops up instead of silently replacing the last one
       })
     }
     if (fromButton) setTestSent(real ? 'sent' : 'simulated')
