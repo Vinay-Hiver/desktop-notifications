@@ -1,23 +1,22 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MainNav } from '../../patterns/MainNav';
 import { navSampleItems, navSampleFooterItems, navSampleUserMenu } from '../../patterns/MainNav/sampleData';
 import { useCurrentUser } from '../CurrentUser';
 import SwitchUserModal from './SwitchUserModal';
 
 // Main nav from the storybook (replaces the omni-boilerplate MiniSidebar).
-// Conversations and Admin Panel navigate; the other icons do nothing yet.
-const NAV_ROUTES = { conversations: '/', admin: '/admin-panel' };
+// Conversations navigates; the other icons (including Admin Panel) do nothing.
+const NAV_ROUTES = { conversations: '/' };
 
 // The avatar menu uses the storybook's standard entries (same as My Settings pages).
 // My Settings opens Notifications Settings; Switch Account switches the prototype user.
 
 export default function AppMainNav() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useCurrentUser();
   const [switching, setSwitching] = React.useState(false);
-  const value = location.pathname === '/admin-panel' ? 'admin' : 'conversations';
+  const value = 'conversations';
 
   return (
     <>

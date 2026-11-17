@@ -9,8 +9,6 @@ import ChannelChatView from './components/ChannelChatView';
 import VoiceCallView from './components/voice/VoiceCallView';
 import { VOICE_INBOXES } from './data/voiceCalls';
 import { CHANNEL_BY_INBOX } from './data/channelChats';
-import SettingsPage from './pages/SettingsPage';
-import MySettingsPage from './pages/MySettingsPage';
 import { useState } from 'react';
 import { conversationsData } from './data/emailConversations';
 import { INITIAL_VIEWS_BY_INBOX } from './data/dummyViews';
@@ -192,15 +190,6 @@ function App() {
             )}
           </>
         } />
-        <Route path="/admin-panel" element={
-          <SettingsPage
-            signatures={signatures}
-            setSignatures={setSignatures}
-            defaultSignatureId={defaultSignatureId}
-            setDefaultSignatureId={setDefaultSignatureId}
-          />
-        } />
-        <Route path="/my-settings" element={<MySettingsPage />} />
       </Routes>
     </div>
   );
