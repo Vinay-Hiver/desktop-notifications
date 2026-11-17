@@ -1,6 +1,6 @@
 /* Omni home with the desktop notifications banner. Colours use tokens only. */
 .home-shell { display: flex; flex-direction: column; height: 100%; }
-.home-shell__main { flex: 1; min-height: 0; }
+.home-shell__main { flex: 1; min-height: 0; position: relative; }
 
 /* Banner — Figma "Enable notifications from banner" (17:16251) */
 .home-banner { position: relative; display: flex; align-items: center; justify-content: center; padding: 8px 48px 8px 12px; border-bottom: 0.5px solid var(--blueBorderLight); font: var(--text-body-md-medium); color: var(--slateTextBody); }

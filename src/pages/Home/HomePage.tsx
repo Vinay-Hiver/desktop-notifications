@@ -7,6 +7,7 @@ import bellCheck from '../../assets/banner/bell-check.svg'
 import bellCancel from '../../assets/banner/bell-cancel.svg'
 import external from '../../assets/banner/external.svg'
 import closeIcon from '../../assets/banner/close.svg'
+import CallStripHost from '../../omni/components/IncomingCallStrip/CallStripHost.jsx'
 import './HomePage.css'
 
 /**
@@ -90,7 +91,7 @@ export function HomePage({ onOpenDesktopSettings, children }: HomePageProps) {
         </div>
       )}
 
-      <div className="home-shell__main">{children}</div>
+      <div className="home-shell__main">{children}<CallStripHost /></div>
 
       {/* Prototype-only control, not part of the design */}
       <aside className="home-proto" aria-label="Prototype controls">

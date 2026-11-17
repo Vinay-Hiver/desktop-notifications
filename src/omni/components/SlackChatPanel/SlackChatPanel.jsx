@@ -9,8 +9,10 @@ import { AGENTS, AVATAR_BG } from '../../data/agents';
 import './SlackChatPanel.css';
 
 const RANDOM_REPLIES = [
-  'Thanks, got it!', 'Sure, let me check.', 'Sounds good 👍', 'On it!',
-  'Appreciate it.', 'Okay, will do.', 'Great, thanks for the update.',
+  'Thanks, got it!', 'Sure, let me check.', 'Sounds good 👍', 'Appreciate it.',
+  'Okay, will do.', 'Great, thanks for the update.', 'That fixed it for our team, thanks!',
+  'Still failing for a couple of users, can you take another look?', 'Looping in our admin here.',
+  'Just tried it, all good now 🙌', 'Is there an ETA on this?', 'Thanks for the quick turnaround!',
 ];
 const randomReply = () => RANDOM_REPLIES[Math.floor(Math.random() * RANDOM_REPLIES.length)];
 

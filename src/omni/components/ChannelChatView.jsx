@@ -11,12 +11,12 @@ import { CHANNEL_BY_INBOX, CHANNEL_CHATS } from '../data/channelChats';
  * Slack uses its own conversation list + chat panel; each channel uses the
  * storybook Right Panel for its channel.
  */
-export default function ChannelChatView({ inboxName, viewType = 'Mine' }) {
+export default function ChannelChatView({ inboxName, viewType = 'Mine', initialId }) {
   const channel = CHANNEL_BY_INBOX[inboxName] || 'chat';
   const all = CHANNEL_CHATS[inboxName] || [];
   // Show only the conversations for the active view (e.g. Unassigned).
   const conversations = all.filter((c) => c.view === viewType);
-  const [selectedId, setSelectedId] = useState(conversations[0]?.id);
+  const [selectedId, setSelectedId] = useState(initialId && conversations.some((c) => c.id === initialId) ? initialId : conversations[0]?.id);
 
   const conversation = conversations.find((c) => c.id === selectedId) || conversations[0];
   const isSlack = channel === 'slack';

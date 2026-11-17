@@ -32,9 +32,9 @@ const formatTime = (totalSeconds) => {
  * Voice Shared Inbox: the call list and call detail from omni-voice-channel's
  * ActiveCallView, driven by data/voiceCalls.js, with the storybook right panel.
  */
-export default function VoiceCallView({ inboxName, viewType = 'Mine' }) {
+export default function VoiceCallView({ inboxName, viewType = 'Mine', initialId }) {
   const calls = VOICE_CALLS.filter((c) => c.inbox === inboxName && c.view === viewType);
-  const [selectedId, setSelectedId] = React.useState(calls[0]?.id);
+  const [selectedId, setSelectedId] = React.useState(initialId && calls.some((c) => c.id === initialId) ? initialId : calls[0]?.id);
   const call = calls.find((c) => c.id === selectedId) || calls[0];
 
   // Per-call state: ended (after End Call) and whether the transcript is ready.

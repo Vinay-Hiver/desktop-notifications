@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import Sidebar from './Sidebar';
 import ConversationList from './components/ConversationList';
@@ -126,6 +126,17 @@ function App() {
   }, [activeFilter.inbox, activeFilter.type]);
 
   const location = useLocation();
+  const navigate = useNavigate();
+  // Opened from a desktop alert: /?inbox=…&view=…&conv=… selects that inbox, view and conversation.
+  const [focus, setFocus] = useState(null);
+  React.useEffect(() => {
+    const p = new URLSearchParams(location.search);
+    const inbox = p.get('inbox');
+    if (!inbox) return;
+    setActiveFilter({ inbox, type: p.get('view') || 'Mine' });
+    setFocus({ id: p.get('conv'), n: Date.now() });
+    navigate('/', { replace: true });
+  }, [location.search]);
   React.useEffect(() => {
     // Each route/page sets its own title (e.g. SettingsPage). Only own the
     // mailbox title here so this always-mounted component doesn't clobber it.
@@ -159,9 +170,9 @@ function App() {
               activeRole={activeRole}
             />
             {VOICE_INBOXES.includes(activeFilter.inbox) ? (
-              <VoiceCallView key={`${activeFilter.inbox}|${activeFilter.type}`} inboxName={activeFilter.inbox} viewType={activeFilter.type} />
+              <VoiceCallView key={`${activeFilter.inbox}|${activeFilter.type}|${focus?.n ?? ''}`} inboxName={activeFilter.inbox} viewType={activeFilter.type} initialId={focus?.id} />
             ) : CHANNEL_BY_INBOX[activeFilter.inbox] ? (
-              <ChannelChatView key={`${activeFilter.inbox}|${activeFilter.type}`} inboxName={activeFilter.inbox} viewType={activeFilter.type} />
+              <ChannelChatView key={`${activeFilter.inbox}|${activeFilter.type}|${focus?.n ?? ''}`} inboxName={activeFilter.inbox} viewType={activeFilter.type} initialId={focus?.id} />
             ) : (
               <>
                 <ConversationList

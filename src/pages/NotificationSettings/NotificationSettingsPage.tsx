@@ -205,7 +205,10 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   return (
     <PageLayout variant="admin" nav={nav} sidebar={sidebar}>
       <div className="dn-page">
-        <div className="dn-header"><span className="dn-header__title">Notifications Settings</span></div>
+        <div className="dn-header">
+          <span className="dn-header__title">Notifications Settings</span>
+          <Button variant="secondary" size="sm" onClick={() => window.open('/notifications/test', '_blank')}>Test notifications</Button>
+        </div>
 
         <div className="dn-body">
           <div className="dn-tabs">

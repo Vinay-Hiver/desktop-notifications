@@ -65,8 +65,11 @@ function OutgoingTextBubble({ text, attachments, time, sender, status = 'read', 
 
 // Canned replies used to simulate an incoming response for Chat/Slack.
 const RANDOM_REPLIES = [
-  'Thanks, got it!', 'Sure, let me check.', 'Sounds good 👍', 'On it!',
-  'Perfect, appreciate it.', 'Okay, will do.', 'Great, thanks for the update.',
+  'Thanks, got it!', 'Sure, let me check.', 'Sounds good 👍', 'Perfect, appreciate it.',
+  'Okay, will do.', 'Great, thanks for the update.', 'That worked, thank you!',
+  'Hmm, still seeing the same issue on my side.', 'Can you share the steps once more?',
+  'Just tried it, all good now 🙌', 'Give me a minute, checking on my end.',
+  'Is there an ETA on this?', 'Thanks for the quick help!',
 ];
 const randomReply = () => RANDOM_REPLIES[Math.floor(Math.random() * RANDOM_REPLIES.length)];
 
@@ -232,6 +235,13 @@ export default function ChatPanel({ channel = 'whatsapp', conversation }) {
           prev.map((msg) => (msg.id === msgId ? { ...msg, status: 'read' } : msg))
         );
       }, 3000);
+      // ...then the customer replies.
+      setTimeout(() => {
+        setDynamicMessages((prev) => [
+          ...prev,
+          { id: `reply-${Date.now()}`, kind: 'incoming', text: randomReply(), time: formatNow() },
+        ]);
+      }, 4500);
     } else {
       // Chat/Slack: no ticks — instead a random reply comes back after 2s.
       setTimeout(() => {
