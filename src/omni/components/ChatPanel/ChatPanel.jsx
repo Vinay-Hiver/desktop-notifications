@@ -1,3 +1,4 @@
+import { useConvoMessages } from '../../convoMessages';
 import React, { useState, useRef, useEffect } from 'react';
 import {
   WhatsAppIcon,
@@ -150,7 +151,7 @@ export default function ChatPanel({ channel = 'whatsapp', conversation }) {
   const [isBlocked, setIsBlocked] = useState(isWhatsApp && !!conversation?.blocked);
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [templateModalKey, setTemplateModalKey] = useState(0);
-  const [dynamicMessages, setDynamicMessages] = useState([]);
+  const [dynamicMessages, setDynamicMessages] = useConvoMessages(conversation?.id, channel);
   const [composerText, setComposerText] = useState('');
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
   const [templatePickerKey, setTemplatePickerKey] = useState(0);

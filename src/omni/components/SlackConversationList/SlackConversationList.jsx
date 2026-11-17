@@ -1,3 +1,4 @@
+import { useLatestPreview } from '../../convoMessages';
 import React from 'react';
 import './SlackConversationList.css';
 import InboxIcon from '../InboxIcon';
@@ -21,16 +22,10 @@ function PaperclipIcon() {
 
 // Slack conversation list (Figma node 3017:24579): avatar + name + unread
 // badge + date, a preview line, and a #channel chip.
-export default function SlackConversationList({ conversations = [], selectedId, onSelect, title = 'Mine' }) {
+function SlackListItem({ c, selectedId, onSelect }) {
+  const preview = useLatestPreview(c, 'slack');
   return (
-    <div className="slack-list">
-      <div className="slack-list__header">
-        <PersonIcon />
-        <span>{title}</span>
-      </div>
-      {conversations.map((c) => (
         <button
-          key={c.id}
           type="button"
           className="slack-list__item"
           onClick={() => onSelect(c.id)}
@@ -45,12 +40,22 @@ export default function SlackConversationList({ conversations = [], selectedId, 
             </div>
             <div className="slack-list__preview">
               {c.attachment && <span className="slack-list__clip"><PaperclipIcon /></span>}
-              <span className={c.attachment ? 'slack-list__preview-strong' : ''}>{c.preview}</span>
+              <span className={c.attachment ? 'slack-list__preview-strong' : ''}>{preview}</span>
             </div>
             {c.channel && <span className="slack-list__chip">#{c.channel}</span>}
           </div>
         </button>
-      ))}
+  );
+}
+
+export default function SlackConversationList({ conversations = [], selectedId, onSelect, title = 'Mine' }) {
+  return (
+    <div className="slack-list">
+      <div className="slack-list__header">
+        <PersonIcon />
+        <span>{title}</span>
+      </div>
+      {conversations.map((c) => <SlackListItem key={c.id} c={c} selectedId={selectedId} onSelect={onSelect} />)}
     </div>
   );
 }

@@ -19,22 +19,31 @@ import './NotificationTesterPage.css'
  * Honours the channel switches and "Show message text" from Notifications Settings.
  */
 
-type Sample = { id: string; label: string; title: string; body: string; target: Target; call?: { name: string | null; phone: string } }
+type Sample = { id: string; label: string; title: string; body: string; target: Target; call?: { name: string | null; phone: string }; inject?: string[] }
 type Channel = { id: string; name: string; icon: string; desc: string; samples: Sample[] }
 type Convo = { id: string; view: string; name: string; preview: string }
 
 // Alerts point at the dummy conversations in each inbox (Unassigned = waiting in the inbox, Mine = assigned to you).
+// Customer follow-ups used by the reply alerts; the last one is the alert's text.
+const REPLIES: Record<string, string[]> = {
+  'Website Chat': ['Thanks! One more thing', 'Can I also add a teammate to my plan?', 'Can you check today?'],
+  'WhatsApp Support': ['Hi again', 'I tried that but it still shows the old address', 'Can you update it for me?'],
+  'SMS Support': ['Hello?', 'Still waiting on this', 'Can someone call me back today?'],
+  'Slack Connect': ['Quick follow-up here', 'Two more users are seeing the same error', 'Any update on this?'],
+}
+
 const messagingSamples = (inbox: string, ch: string, noun = 'conversation'): Sample[] => {
   const all: Convo[] = (CHANNEL_CHATS as Record<string, Convo[]>)[inbox] || []
   const waiting = all.filter((c) => c.view === 'Unassigned')
   const mine = all.filter((c) => c.view === 'Mine')
   const [w, m0, m1] = [waiting[0], mine[0], mine[1] ?? mine[0]]
   const to = (c: Convo) => ({ inbox, view: c.view, conv: c.id })
+  const replies = REPLIES[inbox] ?? ['Following up on this', 'Any news?', 'Can you check today?']
   return [
     { id: 'assigned', label: `New ${noun} assigned to you`, title: `New ${ch} · ${m0.name}`, body: m0.preview, target: to(m0) },
     { id: 'waiting', label: `New ${noun} waiting in inbox`, title: `New ${ch} waiting in ${inbox}`, body: `${w.name}: ${w.preview}`, target: to(w) },
-    { id: 'reply', label: 'Customer replied', title: `${m1.name} replied on ${ch}`, body: m1.preview, target: to(m1) },
-    { id: 'burst', label: 'Several new messages', title: `${m0.name} · 3 new messages`, body: m0.preview, target: to(m0) },
+    { id: 'reply', label: 'Customer replied', title: `${m1.name} replied on ${ch}`, body: replies[2], target: to(m1), inject: [replies[2]] },
+    { id: 'burst', label: 'Several new messages', title: `${m0.name} · 3 new messages`, body: replies[2], target: to(m0), inject: replies },
     { id: 'summary', label: `${waiting.length} ${noun}s waiting`, title: `${waiting.length} ${noun}s waiting in ${inbox}`, body: '', target: { inbox, view: 'Unassigned' } },
   ]
 }
@@ -108,6 +117,7 @@ export function NotificationTesterPage() {
       // No requireInteraction: on macOS that routes the alert to Chrome's separate "Alerts" permission, which is often off.
       target: s.target,
       call: s.call,
+      inject: s.inject,
     })
     if (delay) { setTimeout(send, 5000); setLast(`“${s.label}” will show in 5 seconds. Switch to another tab or app.`) }
     else { send(); setLast(`Sent “${s.label}”.`) }

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { startIncomingCall } from './omni/incomingCall'
+import { addIncoming } from './omni/convoMessages'
 
 /**
  * Prototype: lets the Test notifications tab ask an open Hiver tab to show an alert.
@@ -9,7 +10,7 @@ import { startIncomingCall } from './omni/incomingCall'
  */
 export const BUS = 'omni-notify'
 export type Target = { inbox: string; view: string; conv?: string }
-export type AlertSpec = { title: string; body?: string; tag: string; requireInteraction?: boolean; target: Target; call?: { name: string | null; phone: string } }
+export type AlertSpec = { title: string; body?: string; tag: string; requireInteraction?: boolean; target: Target; call?: { name: string | null; phone: string }; inject?: string[] }
 
 export const targetUrl = (t: Target) =>
   `/?${new URLSearchParams({ inbox: t.inbox, view: t.view, ...(t.conv ? { conv: t.conv } : {}) })}`
@@ -33,6 +34,8 @@ export function NotificationBridge() {
       if (m?.type === 'claim') bus.postMessage({ type: 'ack', id: m.id, tab: TAB_ID })
       if (m?.type === 'fire' && m.tab === TAB_ID) {
         const spec = m.spec as AlertSpec
+        // A customer reply alert also adds that reply to the conversation, as if it just arrived.
+        if (spec.inject?.length && spec.target.conv) addIncoming(spec.target.conv, spec.inject)
         showAlert(spec, (url) => navigate(url))
         // A call also rings the call strip in this tab.
         if (spec.call && spec.target.conv) startIncomingCall({ id: spec.target.conv, inbox: spec.target.inbox, view: spec.target.view, ...spec.call })

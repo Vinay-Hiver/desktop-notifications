@@ -1,3 +1,4 @@
+import { useLatestPreview } from '../../convoMessages';
 import InboxIcon from '../InboxIcon';
 import { ViewTypeIcon } from '../viewIcons';
 import './ConversationList.css';
@@ -14,6 +15,7 @@ function ConversationAvatar({ channel }) {
 }
 
 function ConversationItem({ conversation, channel, selected, onSelect }) {
+  const preview = useLatestPreview(conversation, channel);
   return (
     <div className="conversation-list__item-wrap">
       <div
@@ -25,7 +27,7 @@ function ConversationItem({ conversation, channel, selected, onSelect }) {
           <span className="conversation-list__title">{conversation.title}</span>
           <span className="conversation-list__date">{conversation.date}</span>
         </div>
-        <p className="conversation-list__preview">{conversation.preview}</p>
+        <p className="conversation-list__preview">{preview}</p>
       </div>
     </div>
   );

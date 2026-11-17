@@ -6,6 +6,7 @@ import emojiIcon from '../../icons/emoji.svg';
 import attachFileIcon from '../../icons/attach-file.svg';
 import { useCurrentUser } from '../../CurrentUser';
 import { AGENTS, AVATAR_BG } from '../../data/agents';
+import { useConvoMessages } from '../../convoMessages';
 import './SlackChatPanel.css';
 
 const RANDOM_REPLIES = [
@@ -105,9 +106,7 @@ export default function SlackChatPanel({ inboxName, conversation }) {
   const custDisplay = conversation?.name || 'Customer';
   const CUSTOMER = { name: custDisplay, initial: custDisplay.charAt(0).toUpperCase(), color: conversation?.avatarColor || '#7b8bd4' };
 
-  const [messages, setMessages] = useState(
-    (conversation?.messages || []).map((m, i) => ({ ...m, id: m.id || `m-${i}` }))
-  );
+  const [messages, setMessages] = useConvoMessages(conversation?.id, 'slack');
   const [text, setText] = useState('');
   const threadRef = useRef(null);
 
