@@ -148,8 +148,9 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   const sendTest = useCallback((fromButton = false) => {
     const real = readPermission() === 'granted' && simulation === 'real'
     if (real) {
-      new Notification('Desktop notifications are on', {
-        body: "You'll see calls and messages here even when Hiver is in the background.",
+      // Turning on: confirms the setting. Button: a short "it works" check.
+      new Notification(fromButton ? 'Hello from Hiver' : 'Desktop notifications are on', {
+        body: fromButton ? 'Great, alerts are working.' : "You'll see calls and messages here even when Hiver is in the background.",
         icon: '/hiver-favicon.png',
         tag: `omni-test-${Date.now()}`, // a new tag each time, so a repeat test pops up instead of silently replacing the last one
       })

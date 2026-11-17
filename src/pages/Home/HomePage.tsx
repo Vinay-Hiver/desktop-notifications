@@ -23,8 +23,9 @@ export type HomePageProps = {
 }
 
 export function HomePage({ onOpenDesktopSettings, children }: HomePageProps) {
-  // Prototype: the banner always shows when the app loads.
-  const [banner, setBanner] = useState<BannerState>('prompt')
+  // Shows on every load (even if closed before), unless desktop notifications are already on.
+  const [banner, setBanner] = useState<BannerState>(() =>
+    load('dn.enabled', false) && currentPermission() === 'granted' ? 'hidden' : 'prompt')
 
   async function turnOn() {
     save('dn.promptDismissed', true)
