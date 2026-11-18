@@ -1,4 +1,4 @@
-import { useLatestPreview } from '../../convoMessages';
+import { useLatestPreview, useIsUnread } from '../../convoMessages';
 import React from 'react';
 import './SlackConversationList.css';
 import InboxIcon from '../InboxIcon';
@@ -24,6 +24,7 @@ function PaperclipIcon() {
 // badge + date, a preview line, and a #channel chip.
 function SlackListItem({ c, selectedId, onSelect }) {
   const preview = useLatestPreview(c, 'slack');
+  const isUnread = useIsUnread(c.id);
   return (
         <button
           type="button"
@@ -34,8 +35,9 @@ function SlackListItem({ c, selectedId, onSelect }) {
             <div className="slack-list__top">
               {/* [inbox icon] [name], the same format as the Voice list */}
               <InboxIcon channel="slack" />
-              <span className="slack-list__name">{c.name}</span>
+              <span className="slack-list__name" style={isUnread ? { fontWeight: 600 } : undefined}>{c.name}</span>
               {c.unread && <span className="slack-list__badge">{c.unread}</span>}
+              {isUnread && <span className="slack-list__unread" aria-label="Unread" />}
               <span className="slack-list__date">{c.date}</span>
             </div>
             <div className="slack-list__preview">

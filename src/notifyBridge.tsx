@@ -36,9 +36,13 @@ export function NotificationBridge() {
         const spec = m.spec as AlertSpec
         // A customer reply alert also adds that reply to the conversation, as if it just arrived.
         if (spec.inject?.length && spec.target.conv) addIncoming(spec.target.conv, spec.inject)
-        showAlert(spec, (url) => navigate(url))
         // A call also rings the call strip in this tab.
         if (spec.call && spec.target.conv) startIncomingCall({ id: spec.target.conv, inbox: spec.target.inbox, view: spec.target.view, ...spec.call })
+        // Desktop alerts are for when Hiver isn't in front: hold them back while this tab has focus
+        // (the unread dot, sidebar dot and call strip show inside Hiver instead).
+        const shown = !document.hasFocus()
+        if (shown) showAlert(spec, (url) => navigate(url))
+        bus.postMessage({ type: 'result', id: m.id, shown })
       }
     }
     return () => bus.close()

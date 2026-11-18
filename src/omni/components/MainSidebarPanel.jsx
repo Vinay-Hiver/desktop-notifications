@@ -4,6 +4,13 @@ import { ViewTypeIcon, TeamFavRowIcon } from './viewIcons';
 import { INITIAL_VIEWS_BY_INBOX, MAX_FAVOURITES } from '../data/dummyViews';
 import { channelViewCount, channelInboxTotal, isCountedView } from '../data/channelChats';
 import { useCurrentUser } from '../CurrentUser';
+import { useUnreadIn } from '../convoMessages';
+
+/** Blue dot when an inbox (or one of its views) has unread conversations. */
+function UnreadDot({ inbox, view }) {
+  const n = useUnreadIn(inbox, view);
+  return n > 0 ? <span className="nav-unread-dot" aria-label={`${n} unread`} /> : null;
+}
 
 // Icons
 import allMailIcon from '../assets/icons/all-mail.svg';
@@ -299,7 +306,7 @@ const MainSidebarPanel = ({ activeFilter, onFilterChange, activeRole, onOpenSear
               <span>{item.type}</span>
             </div>
             {isCountedView(item.type) && (
-              <div className="nav-item-meta"><span className="count">{channelViewCount(inboxName, item.type)}</span></div>
+              <div className="nav-item-meta"><UnreadDot inbox={inboxName} view={item.type} /><span className="count">{channelViewCount(inboxName, item.type)}</span></div>
             )}
           </div>
         ))}
@@ -369,6 +376,7 @@ const MainSidebarPanel = ({ activeFilter, onFilterChange, activeRole, onOpenSear
                     <span>{name}</span>
                   </div>
                   <div className="accordion-meta">
+                    <UnreadDot inbox={name} />
                     <span className="inbox-sum">{inboxSum(name)}</span>
                     <img
                       src={sChevronDown}

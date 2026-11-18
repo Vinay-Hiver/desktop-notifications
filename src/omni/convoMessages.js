@@ -44,6 +44,7 @@ export function addIncoming(id, texts) {
   const prev = store[key] ?? initialFor(id, found.channel);
   store[key] = [...prev, ...texts.map((text, i) => ({ id: `in-${Date.now()}-${i}`, kind: 'incoming', text, time: formatNow() }))];
   emit();
+  markUnreadIfHidden(id);
 }
 
 const previewOf = (m) => m?.text || m?.attachments?.[0]?.name || (m?.kind === 'template' ? (m.template?.name ? `Template: ${m.template.name}` : 'Template message') : '');
@@ -55,3 +56,33 @@ export function useLatestPreview(convo, channel) {
   const all = channel === 'slack' ? (added ?? convo.messages ?? []) : [...(convo.messages || []), ...(added || [])];
   return previewOf(all[all.length - 1]) || convo.preview;
 }
+
+/* ── Unread ─────────────────────────────────────────────────────────────
+ * A conversation turns unread when a customer message arrives while it isn't
+ * on screen (another conversation is open, or Hiver doesn't have focus).
+ * Opening it, or coming back to Hiver while it's open, marks it read. */
+let unread = new Set();
+let openId = null;
+const setUnread = (next) => { unread = next; emit(); };
+
+export function markRead(id) { if (id && unread.has(id)) { const n = new Set(unread); n.delete(id); setUnread(n); } }
+export function setOpenConversation(id) { openId = id; if (id && document.hasFocus()) markRead(id); }
+if (typeof window !== 'undefined') window.addEventListener('focus', () => markRead(openId));
+
+const markUnreadIfHidden = (id) => {
+  if (id === openId && document.hasFocus()) return;
+  if (!unread.has(id)) setUnread(new Set(unread).add(id));
+};
+
+export const useIsUnread = (id) => useSyncExternalStore(subscribe, () => unread.has(id));
+
+const inboxOf = (id) => Object.entries(CHANNEL_CHATS).find(([, list]) => list.some((c) => c.id === id));
+/** Unread conversations in an inbox (optionally one view), for the sidebar. */
+export const useUnreadIn = (inbox, view) => useSyncExternalStore(subscribe, () => {
+  let n = 0;
+  unread.forEach((id) => {
+    const hit = inboxOf(id);
+    if (hit && hit[0] === inbox && (!view || hit[1].find((c) => c.id === id)?.view === view)) n += 1;
+  });
+  return n;
+});

@@ -128,3 +128,8 @@
   background: var(--green-500);
   border: 1px solid var(--slateSurfaceWhite);
 }
+
+/* Unread: a reply arrived while the conversation wasn't on screen */
+.conversation-list__unread { width: 8px; height: 8px; border-radius: 50%; background: var(--primarySurfaceDefault); flex: none; }
+.conversation-list__item--unread .conversation-list__title { font-weight: 600; color: var(--slateTextTitle); }
+.conversation-list__item--unread .conversation-list__preview { color: var(--slateTextBody); }

@@ -69,19 +69,20 @@ const CHANNELS: Channel[] = [
 ]
 
 /** Asks an open Hiver tab to show the alert (so a click returns to it). Falls back to this tab, opening Hiver in a new tab on click. */
-function sendViaHiver(spec: AlertSpec) {
-  if (typeof BroadcastChannel === 'undefined') { showAlert(spec, (url) => window.open(url, '_blank')); return }
+function sendViaHiver(spec: AlertSpec, onResult: (r: 'shown' | 'held' | 'fallback') => void) {
+  const fallback = () => { showAlert(spec, (url) => window.open(url, '_blank')); onResult('fallback') }
+  if (typeof BroadcastChannel === 'undefined') { fallback(); return }
   const bus = new BroadcastChannel(BUS)
   const id = Math.random().toString(36).slice(2)
-  let done = false
+  let claimed = false
   bus.onmessage = (e) => {
-    if (done || e.data?.type !== 'ack' || e.data.id !== id) return
-    done = true
-    bus.postMessage({ type: 'fire', tab: e.data.tab, spec })
-    setTimeout(() => bus.close(), 100)
+    const m = e.data
+    if (m?.id !== id) return
+    if (m.type === 'ack' && !claimed) { claimed = true; bus.postMessage({ type: 'fire', id, tab: m.tab, spec }) }
+    if (m.type === 'result') { onResult(m.shown ? 'shown' : 'held'); bus.close() }
   }
   bus.postMessage({ type: 'claim', id })
-  setTimeout(() => { if (!done) { done = true; bus.close(); showAlert(spec, (url) => window.open(url, '_blank')) } }, 400)
+  setTimeout(() => { if (!claimed) { claimed = true; bus.close(); fallback() } }, 400)
 }
 
 export function NotificationTesterPage() {
@@ -118,9 +119,12 @@ export function NotificationTesterPage() {
       target: s.target,
       call: s.call,
       inject: s.inject,
-    })
-    if (delay) { setTimeout(send, 5000); setLast(`“${s.label}” will show in 5 seconds. Switch to another tab or app.`) }
-    else { send(); setLast(`Sent “${s.label}”.`) }
+    }, (r) => setLast(
+      r === 'held' ? `Hiver is in front, so no desktop alert for “${s.label}”. It shows inside Hiver instead.`
+      : r === 'fallback' ? `Sent “${s.label}”. No Hiver tab is open, so clicking it opens Hiver in a new tab.`
+      : `Sent “${s.label}”.`))
+    if (delay) { setTimeout(send, 5000); setLast(`“${s.label}” will send in 5 seconds. Switch to another app to get the alert, or to the Hiver tab to see it held back.`) }
+    else send()
   }
 
   return (
@@ -138,7 +142,7 @@ export function NotificationTesterPage() {
 
         <label className="nt-delay">
           <input type="checkbox" checked={delay} onChange={(e) => setDelay(e.target.checked)} />
-          Send after 5 seconds, so I can switch away from Hiver
+          Send after 5 seconds, so I can switch to another app or to Hiver
         </label>
         {last && <div className="nt-last" role="status">{last}</div>}
 

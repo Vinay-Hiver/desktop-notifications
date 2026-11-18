@@ -1,4 +1,4 @@
-import { useLatestPreview } from '../../convoMessages';
+import { useLatestPreview, useIsUnread } from '../../convoMessages';
 import InboxIcon from '../InboxIcon';
 import { ViewTypeIcon } from '../viewIcons';
 import './ConversationList.css';
@@ -16,15 +16,17 @@ function ConversationAvatar({ channel }) {
 
 function ConversationItem({ conversation, channel, selected, onSelect }) {
   const preview = useLatestPreview(conversation, channel);
+  const isUnread = useIsUnread(conversation.id);
   return (
     <div className="conversation-list__item-wrap">
       <div
-        className={'conversation-list__item' + (selected ? ' conversation-list__item--selected' : '')}
+        className={'conversation-list__item' + (selected ? ' conversation-list__item--selected' : '') + (isUnread ? ' conversation-list__item--unread' : '')}
         onClick={() => onSelect(conversation.id)}
       >
         <div className="conversation-list__row">
           <ConversationAvatar conversation={conversation} channel={channel} />
           <span className="conversation-list__title">{conversation.title}</span>
+          {isUnread && <span className="conversation-list__unread" aria-label="Unread" />}
           <span className="conversation-list__date">{conversation.date}</span>
         </div>
         <p className="conversation-list__preview">{preview}</p>

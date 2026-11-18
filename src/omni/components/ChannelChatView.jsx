@@ -5,6 +5,7 @@ import ChatPanel from './ChatPanel/ChatPanel';
 import SlackChatPanel from './SlackChatPanel/SlackChatPanel';
 import ConversationRightPanel from './ConversationRightPanel';
 import { CHANNEL_BY_INBOX, CHANNEL_CHATS } from '../data/channelChats';
+import { setOpenConversation } from '../convoMessages';
 
 /**
  * Chat-style view for Chat / Slack / WhatsApp Shared Inboxes.
@@ -20,6 +21,9 @@ export default function ChannelChatView({ inboxName, viewType = 'Mine', initialI
 
   const conversation = conversations.find((c) => c.id === selectedId) || conversations[0];
   const isSlack = channel === 'slack';
+
+  // The open conversation is read; replies to it while it's on screen don't mark it unread.
+  React.useEffect(() => { setOpenConversation(conversation?.id ?? null); return () => setOpenConversation(null); }, [conversation?.id]);
 
   return (
     <>
