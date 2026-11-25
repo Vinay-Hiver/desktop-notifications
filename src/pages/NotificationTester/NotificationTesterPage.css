@@ -13,5 +13,10 @@
 .nt-section__head img { display: block; flex: none; }
 .nt-section__title { margin: 0; font: var(--text-body-md-medium); color: var(--slateTextBody); }
 .nt-section__desc { font: 400 12px/18px var(--fontFamily); color: var(--slateTextSubtle); }
-.nt-off { margin-left: auto; font: 400 12px/18px var(--fontFamily); color: var(--slateTextSubtle); }
 .nt-box { flex: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; padding: 12px; border: 1px solid var(--slateBorderMild); border-radius: 8px; }
+/* Channel switched off in settings: red outline, buttons greyed out */
+.nt-box--off { position: relative; border-color: var(--errorBorderDefault); }
+.nt-box--off > button { opacity: 0.35; pointer-events: none; }
+/* Hovering an off channel shows the HOT tooltip right away (no delay), centred above its card */
+.nt-offtip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 10; pointer-events: none; visibility: hidden; }
+.nt-section--off:hover .nt-offtip { visibility: visible; }

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../../components/Button'
+import { TooltipBubble } from '../../components/Tooltip'
+import { Play } from 'lucide-react'
 import { load, readPermission } from '../NotificationSettings/desktopNotifications'
 import voiceIcon from '../../assets/settings/voice.svg'
 import chatIcon from '../../assets/settings/chat.svg'
@@ -172,17 +174,17 @@ export function NotificationTesterPage() {
         {CHANNELS.map((ch) => {
           const off = isOff(channels, ch.id)
           return (
-            <section className="nt-section" key={ch.id} aria-labelledby={`nt-${ch.id}`}>
+            <section className={`nt-section${off ? ' nt-section--off' : ''}`} key={ch.id} aria-labelledby={`nt-${ch.id}`}>
               <div className="nt-section__head">
                 <img src={ch.icon} width={16} height={16} alt="" />
                 <h3 className="nt-section__title" id={`nt-${ch.id}`}>{ch.name}</h3>
                 <span className="nt-section__desc">{ch.desc}</span>
-                {off && <span className="nt-off">Off in settings</span>}
               </div>
-              <div className="nt-box">
+              <div className={`nt-box${off ? ' nt-box--off' : ''}`} aria-disabled={off || undefined}>
                 {ch.samples.map((s) => (
-                  <Button key={s.id} variant="secondary" size="sm" onClick={() => fire(ch, s)} disabled={permission !== 'granted'}>{s.label}</Button>
+                  <Button key={s.id} variant="secondary" size="sm" iconLeft={<Play size={14} strokeWidth={1.75} />} onClick={() => fire(ch, s)} disabled={off || permission !== 'granted'}>{s.label}</Button>
                 ))}
+                {off && <TooltipBubble className="nt-offtip">Notifications are off for {ch.name}</TooltipBubble>}
               </div>
             </section>
           )
