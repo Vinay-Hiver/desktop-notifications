@@ -63,8 +63,8 @@ export function sendTestNotification(): 'sent' | 'simulated' {
   const sim = load<Simulation>('dn.simulation', 'real')
   if (sim === 'real' && readPermission() === 'granted') {
     new Notification('Desktop notifications are on', {
-      body: "You'll see calls and messages here even when Hiver is in the background.",
-      icon: '/hiver-favicon.png',
+      body: "You'll be notified about incoming calls and messages here, even when Hiver is in the background.",
+      icon: '/favicon.svg',
       tag: `omni-test-${Date.now()}`, // a new tag each time, so a repeat test pops up instead of silently replacing the last one
     })
     return 'sent'

@@ -6,6 +6,8 @@ import chatIcon from '../../assets/settings/chat.svg'
 import whatsappIcon from '../../assets/settings/whatsapp.svg'
 import smsIcon from '../../assets/settings/sms.svg'
 import slackIcon from '../../assets/settings/slack.svg'
+import emailIcon from '../../assets/settings/email.svg'
+import { conversationsData } from '../../omni/data/emailConversations'
 import { CHANNEL_CHATS } from '../../omni/data/channelChats'
 import { VOICE_CALLS } from '../../omni/data/voiceCalls'
 import { BUS, showAlert } from '../../notifyBridge'
@@ -16,7 +18,7 @@ import './NotificationTesterPage.css'
  * Prototype tool: fire sample desktop alerts per channel, following the PRD's alert cases
  * (incoming call; conversation assigned to you; new conversation waiting in an inbox; customer replied;
  * several messages in one conversation; several conversations waiting). Opens in its own tab.
- * Honours the channel switches and "Show message text" from Notifications Settings.
+ * Honours the channel switches and "Show message preview" from Notifications Settings.
  */
 
 type Sample = { id: string; label: string; title: string; body: string; target: Target; call?: { name: string | null; phone: string }; inject?: string[] }
@@ -60,29 +62,53 @@ const callSamples = (): Sample[] => {
   ]
 }
 
+type Email = { id: number; inbox: string; type: string; sender: string; subject: string; preview: string }
+// Email alerts only for assignment and customer replies (no "waiting in inbox": shared email inboxes are too busy).
+const emailSamples = (): Sample[] => {
+  const mine = (conversationsData as Email[]).filter((c) => c.inbox === 'Customer Support' && c.type === 'Mine')
+  const [a, b] = [mine[0], mine[1] ?? mine[0]]
+  const to = (c: Email) => ({ inbox: c.inbox, view: c.type, conv: String(c.id) })
+  return [
+    { id: 'assigned', label: 'New email assigned to you', title: `New email · ${a.sender}`, body: a.subject, target: to(a) },
+    { id: 'reply', label: 'Customer replied', title: `${b.sender} replied on email`, body: b.preview, target: to(b) },
+  ]
+}
+
+// Email starts off until turned on in settings; the others start on.
+const isOff = (channels: Record<string, boolean>, id: string) => (channels[id] ?? id !== 'email') === false
+
 const CHANNELS: Channel[] = [
   { id: 'voice', name: 'Voice', icon: voiceIcon, desc: 'Phone Support', samples: callSamples() },
   { id: 'chat', name: 'Chat', icon: chatIcon, desc: 'Website Chat', samples: messagingSamples('Website Chat', 'chat', 'chat') },
   { id: 'whatsapp', name: 'WhatsApp', icon: whatsappIcon, desc: 'WhatsApp Support', samples: messagingSamples('WhatsApp Support', 'WhatsApp message') },
   { id: 'sms', name: 'SMS', icon: smsIcon, desc: 'SMS Support', samples: messagingSamples('SMS Support', 'SMS') },
   { id: 'slack', name: 'Slack', icon: slackIcon, desc: 'Slack Connect', samples: messagingSamples('Slack Connect', 'Slack message') },
+  { id: 'email', name: 'Email', icon: emailIcon, desc: 'Customer Support', samples: emailSamples() },
 ]
 
-/** Asks an open Hiver tab to show the alert (so a click returns to it). Falls back to this tab, opening Hiver in a new tab on click. */
-function sendViaHiver(spec: AlertSpec, onResult: (r: 'shown' | 'held' | 'fallback') => void) {
-  const fallback = () => { showAlert(spec, (url) => window.open(url, '_blank')); onResult('fallback') }
-  if (typeof BroadcastChannel === 'undefined') { fallback(); return }
-  const bus = new BroadcastChannel(BUS)
-  const id = Math.random().toString(36).slice(2)
-  let claimed = false
+/** Open Hiver tabs (they announce themselves) and when each was last in front. */
+const hiverTabs = new Map<string, number>()
+const bus = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(BUS) : null
+const pending = new Map<string, (shown: boolean) => void>()
+if (bus) {
   bus.onmessage = (e) => {
     const m = e.data
-    if (m?.id !== id) return
-    if (m.type === 'ack' && !claimed) { claimed = true; bus.postMessage({ type: 'fire', id, tab: m.tab, spec }) }
-    if (m.type === 'result') { onResult(m.shown ? 'shown' : 'held'); bus.close() }
+    if (m?.type === 'here') hiverTabs.set(m.tab, m.lastActive ?? 0)
+    if (m?.type === 'bye') hiverTabs.delete(m.tab)
+    if (m?.type === 'result') { pending.get(m.id)?.(m.shown); pending.delete(m.id) }
   }
-  bus.postMessage({ type: 'claim', id })
-  setTimeout(() => { if (!claimed) { claimed = true; bus.close(); fallback() } }, 400)
+  bus.postMessage({ type: 'who' }) // tabs opened before this page answer straight away
+}
+
+/** Asks an open Hiver tab to show the alert (so a click returns to it). With no Hiver tab, shows it here and opens Hiver in a new tab on click. No waiting either way. */
+function sendViaHiver(spec: AlertSpec, onResult: (r: 'shown' | 'held' | 'fallback') => void) {
+  // The Hiver tab used last. If that tab is in front right now, it holds the alert back (Hiver is in front).
+  let tab: string | undefined, best = -1
+  for (const [id, at] of hiverTabs) if (at >= best) { tab = id; best = at }
+  if (!bus || !tab) { showAlert(spec, (url) => window.open(url, '_blank')); onResult('fallback'); return }
+  const id = Math.random().toString(36).slice(2)
+  pending.set(id, (shown) => onResult(shown ? 'shown' : 'held'))
+  bus.postMessage({ type: 'fire', id, tab, spec })
 }
 
 export function NotificationTesterPage() {
@@ -110,10 +136,10 @@ export function NotificationTesterPage() {
     const channels = load<Record<string, boolean>>('dn.channels', {})
     const showText = load('dn.showText', false)
     if (readPermission() !== 'granted') { setLast('Notifications aren’t allowed in this browser yet.'); return }
-    if (channels[ch.id] === false) { setLast(`${ch.name} alerts are off in Notifications Settings, so nothing was sent.`); return }
+    if (isOff(channels, ch.id)) { setLast(`${ch.name} alerts are off in Notifications Settings, so nothing was sent.`); return }
     const send = () => sendViaHiver({
       title: s.title,
-      body: (showText || ch.id === 'voice') && s.body ? s.body : undefined, // calls show the line; messages only if Show message text is on
+      body: (showText || ch.id === 'voice') && s.body ? s.body : undefined, // calls show the line; messages only if Show message preview is on
       tag: `omni-${ch.id}-${s.id}-${Date.now()}`,
       // No requireInteraction: on macOS that routes the alert to Chrome's separate "Alerts" permission, which is often off.
       target: s.target,
@@ -131,7 +157,7 @@ export function NotificationTesterPage() {
     <div className="nt-page">
       <div className="nt-header"><span className="nt-header__title">Test notifications</span></div>
       <div className="nt-body">
-        <p className="nt-intro">Send sample desktop alerts for each channel. Click an alert to open that conversation in Hiver. They follow your Notifications Settings: channel switches and Show message text.</p>
+        <p className="nt-intro">Send sample desktop alerts for each channel. Click an alert to open that conversation in Hiver. They follow your Notifications Settings: channel switches and Show message preview.</p>
 
         {permission !== 'granted' && (
           <div className="nt-warn">Notifications aren’t allowed in this browser. Turn them on in Notifications Settings first.</div>
@@ -147,7 +173,7 @@ export function NotificationTesterPage() {
         {last && <div className="nt-last" role="status">{last}</div>}
 
         {CHANNELS.map((ch) => {
-          const off = channels[ch.id] === false
+          const off = isOff(channels, ch.id)
           return (
             <section className="nt-section" key={ch.id} aria-labelledby={`nt-${ch.id}`}>
               <div className="nt-section__head">

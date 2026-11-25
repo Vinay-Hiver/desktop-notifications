@@ -134,7 +134,7 @@
 .dn-section__title { margin: 0; font: var(--text-body-md-medium); color: var(--slateTextBody); }
 .dn-box { display: flex; flex-direction: column; gap: 12px; padding: 12px; border: 1px solid var(--slateBorderMild); border-radius: 8px; background: var(--slateSurfaceWhite); }
 .dn-box--channels { gap: 16px; }
-.dn-chgroup { display: flex; flex-direction: column; gap: 12px; }
+.dn-chgroup { display: flex; flex-direction: column; gap: 14px; }
 .dn-chgroup__desc { margin: 0; font: 400 13px/19px var(--fontFamily); color: var(--slateTextBody); }
 .dn-divider { margin: 0; border: 0; border-top: 1px solid var(--slateBorderMild); }
 .dn-item { display: flex; align-items: center; gap: 8px; }

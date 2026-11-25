@@ -68,19 +68,19 @@ export function HomePage({ onOpenDesktopSettings, children }: HomePageProps) {
           <div className="home-banner__content">
             <span className="home-banner__msg">
               <img src={look === 'success' ? bellCheck : look === 'error' ? bellCancel : bellRinging} width={14} height={14} alt="" />
-              {look === 'info' && 'Get alerts for calls and messages, so you never miss an update'}
+              {look === 'info' && 'Get real-time alerts for incoming calls and messages.'}
               {look === 'success' && "Desktop notifications are on. You'll now receive alerts for calls and messages."}
-              {look === 'error' && 'Your browser is blocking notifications from Omni.'}
+              {look === 'error' && 'Your browser is blocking notifications for Hiver Omni.'}
             </span>
             {look === 'info' && (
               <button type="button" className="home-banner__btn" onClick={turnOn} disabled={banner === 'asking'}>Turn on desktop notifications</button>
             )}
             {look === 'success' && (
-              <button type="button" className="home-banner__link" onClick={onOpenDesktopSettings}>See more settings</button>
+              <button type="button" className="home-banner__link" onClick={onOpenDesktopSettings}>View notification settings</button>
             )}
             {look === 'error' && (
               <a className="home-banner__link" href={help.href} target="_blank" rel="noreferrer">
-                {browserName ? `How to allow ${browserName} notifications` : 'How to allow notifications'}
+                {browserName ? `How to allow notifications in ${browserName}` : 'How to allow notifications'}
                 <img src={external} width={16} height={16} alt="" />
               </a>
             )}

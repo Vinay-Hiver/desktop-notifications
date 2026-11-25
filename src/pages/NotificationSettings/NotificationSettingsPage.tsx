@@ -19,6 +19,7 @@ import slackIcon from '../../assets/settings/slack.svg'
 import chatIcon from '../../assets/settings/chat.svg'
 import whatsappIcon from '../../assets/settings/whatsapp.svg'
 import smsIcon from '../../assets/settings/sms.svg'
+import emailIcon from '../../assets/settings/email.svg'
 import lockIcon from '../../assets/settings/lock.svg'
 import hiverLogo from '../../assets/settings/hiver-logo.svg'
 import externalBlue from '../../assets/settings/external-blue.svg'
@@ -48,6 +49,9 @@ const desktopChannels: { id: string; label: string; icon: IconName; description:
   { id: 'slack', label: 'Slack', icon: 'slack', description: '' },
 ]
 
+// Email starts off: shared email inboxes are busy, so alerts there are opt-in.
+const defaultChannels = (): Record<string, boolean> => ({ ...Object.fromEntries(desktopChannels.map((c) => [c.id, true])), email: false })
+
 // Today's sound settings, unchanged (from the current Omni page).
 const soundGroups: { title: string; icon: IconName; info?: string; disabled?: boolean; rows: [string, boolean][] }[] = [
   { title: 'For Email Inbox', icon: 'emailinbox', rows: [['New conversation received', true], ['Email assigned to me', false], ['Notes mentioning me', true], ['SLA Breaches', true]] },
@@ -72,8 +76,8 @@ function Row({ icon, title, description, control, strong }: { icon?: IconName; t
 /** Mock of a desktop alert (Figma "Dektop-Browser-Notification"). Hiver's icon sits on the right. */
 function AlertPreview({ showText }: { showText: boolean }) {
   return (
-    <div className="dn-preview" aria-label="Notification preview">
-      <span className="dn-preview__label">Notification preview</span>
+    <div className="dn-preview" aria-label="Example notification">
+      <span className="dn-preview__label">Example notification</span>
       <div className="dn-preview__card">
         <div className="dn-preview__text">
           <div className="dn-preview__title">New chat from Emma<br />app.hiverhq.com</div>
@@ -91,6 +95,7 @@ const channelRows: { id: string; label: string; icon: string }[] = [
   { id: 'chat', label: 'Chat', icon: chatIcon },
   { id: 'whatsapp', label: 'WhatsApp', icon: whatsappIcon },
   { id: 'sms', label: 'SMS', icon: smsIcon },
+  { id: 'email', label: 'Email', icon: emailIcon },
 ]
 
 export type NotificationSettingsPageProps = {
@@ -105,7 +110,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   const [simulation, setSimulation] = useState<Simulation>(() => load('dn.simulation', 'real'))
   const [simPermission, setSimPermission] = useState<Permission>(() => { const s = load<Simulation>('dn.simulation', 'real'); return load<Permission>('dn.simPermission', s === 'real' ? 'default' : s) })
   const [enabled, setEnabled] = useState<boolean>(() => load('dn.enabled', false))
-  const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channels', Object.fromEntries(desktopChannels.map((c) => [c.id, true]))))
+  const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channels', defaultChannels()))
   const [showText, setShowText] = useState<boolean>(() => load('dn.showText', false))
   const [promptDismissed, setPromptDismissed] = useState<boolean>(() => load('dn.promptDismissed', false))
   const [asking, setAsking] = useState(false)
@@ -150,8 +155,8 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
     if (real) {
       // Turning on: confirms the setting. Button: a short "it works" check.
       new Notification(fromButton ? 'Hello from Hiver' : 'Desktop notifications are on', {
-        body: fromButton ? 'Great, alerts are working.' : "You'll see calls and messages here even when Hiver is in the background.",
-        icon: '/hiver-favicon.png',
+        body: fromButton ? 'Great, alerts are working.' : "You'll be notified about incoming calls and messages here, even when Hiver is in the background.",
+        icon: '/favicon.svg',
         tag: `omni-test-${Date.now()}`, // a new tag each time, so a repeat test pops up instead of silently replacing the last one
       })
     }
@@ -187,7 +192,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
 
   function resetPrototype() {
     setEnabled(false); setPromptDismissed(false); setBlockedOnTry(false); setTestSent('none'); setShowText(false)
-    setChannels(Object.fromEntries(desktopChannels.map((c) => [c.id, true])))
+    setChannels(defaultChannels())
     if (simulation !== 'real') setSimPermission(simulation)
   }
 
@@ -198,7 +203,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
     <div className="dn-item" key={c.id}>
       <span className="dn-item__icon"><img src={c.icon} width={14} height={14} alt="" /></span>
       <div className="dn-item__text"><span className="dn-item__title">{c.label}</span></div>
-      <Switch checked={channels[c.id]} onChange={(e) => setChannels({ ...channels, [c.id]: e.target.checked })} aria-label={`Desktop alerts for ${c.label}`} />
+      <Switch checked={channels[c.id] ?? c.id !== 'email'} onChange={(e) => setChannels({ ...channels, [c.id]: e.target.checked })} aria-label={`Desktop alerts for ${c.label}`} />
     </div>
   )
 
@@ -223,11 +228,11 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
             <div className="dn-blocked" role="alert">
               <span className="dn-blocked__icon"><img src={warningIcon} width={14} height={14} alt="" /></span>
               <div className="dn-blocked__text">
-                <span className="dn-blocked__title">Your browser is blocking notifications from Omni.</span>
+                <span className="dn-blocked__title">Your browser is blocking notifications for Hiver Omni.</span>
                 <span className="dn-blocked__desc">Allow notifications for Omni and they'll turn on here.</span>
               </div>
               <a className="dn-blocked__link" href={helpLink().href} target="_blank" rel="noreferrer">
-                {detectBrowser() ? `How to allow ${detectBrowser()!.name} notifications` : 'How to allow notifications'}
+                {detectBrowser() ? `How to allow notifications in ${detectBrowser()!.name}` : 'How to allow notifications'}
                 <img src={externalIcon} width={16} height={16} alt="" />
               </a>
             </div>
@@ -240,7 +245,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
               <img className="dn-master__icon" src={cardBell} width={14} height={20} alt="" />
               <div className="dn-master__text">
                 <span className="dn-master__title" id="dn-desktop-title">Desktop notifications</span>
-                <span className="dn-master__desc">Get alerts for calls and messages even when Hiver is in the background.</span>
+                <span className="dn-master__desc">Get real-time alerts for calls and messages, even when Hiver is in the background.</span>
               </div>
               <Switch checked={isOn || asking} disabled={asking || isBlocked} onChange={(e) => onMasterChange(e.target.checked)} aria-label="Desktop notifications" />
             </div>
@@ -265,7 +270,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
                 <button type="button" className="dn-test__btn" onClick={() => sendTest(true)}>Send a test notification</button>
                 {testSent !== 'none' && (
                   <div className="dn-testhint">
-                    <span>Notification sent. If you’re not seeing it, your computer may be blocking it.</span>
+                    <span>Notification sent. Not seeing it? Your browser or computer may be blocking them.</span>
                     <a href={helpLink().href} target="_blank" rel="noreferrer">Troubleshoot notifications</a>
                     <img src={externalBlue} width={14} height={14} alt="" />
                   </div>
@@ -288,7 +293,12 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
                   <hr className="dn-divider" />
                   <div className="dn-chgroup">
                     <p className="dn-chgroup__desc">Alerts when a conversation is assigned to you, waits in your inbox, or the customer replies</p>
-                    {channelRows.filter((c) => c.id !== 'voice').map((c, i) => <Fragment key={c.id}>{i > 0 && <hr className="dn-divider" />}{renderChannel(c)}</Fragment>)}
+                    {channelRows.filter((c) => c.id !== 'voice' && c.id !== 'email').map((c, i) => <Fragment key={c.id}>{i > 0 && <hr className="dn-divider" />}{renderChannel(c)}</Fragment>)}
+                  </div>
+                  <hr className="dn-divider" />
+                  <div className="dn-chgroup">
+                    <p className="dn-chgroup__desc">Alerts when an email is assigned to you or the customer replies</p>
+                    {channelRows.filter((c) => c.id === 'email').map(renderChannel)}
                   </div>
                 </div>
               </section>
@@ -299,10 +309,10 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
                   <div className="dn-item">
                     <span className="dn-item__icon"><img src={lockIcon} width={14} height={14} alt="" /></span>
                     <div className="dn-item__text">
-                      <span className="dn-item__title">Show message text</span>
-                      <span className="dn-item__desc">Include a preview of the customer’s message</span>
+                      <span className="dn-item__title">Show message preview</span>
+                      <span className="dn-item__desc">Notifications will include the customer’s message.</span>
                     </div>
-                    <Switch checked={showText} onChange={(e) => setShowText(e.target.checked)} aria-label="Show message text" />
+                    <Switch checked={showText} onChange={(e) => setShowText(e.target.checked)} aria-label="Show message preview" />
                   </div>
                   <AlertPreview showText={showText} />
                 </div>

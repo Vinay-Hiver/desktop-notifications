@@ -144,12 +144,16 @@ function App() {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    if (filteredConversations.length > 0) {
+    // Opened from a desktop alert: select that email; otherwise the first one in the view.
+    const target = focus?.id && filteredConversations.find(c => String(c.id) === focus.id);
+    if (target) {
+      setSelectedId(target.id);
+    } else if (filteredConversations.length > 0) {
       setSelectedId(filteredConversations[0].id);
     } else {
       setSelectedId(null);
     }
-  }, [activeFilter.inbox, activeFilter.type]);
+  }, [activeFilter.inbox, activeFilter.type, focus?.n]);
 
   const [signatures, setSignatures] = useState([]);
   const [defaultSignatureId, setDefaultSignatureId] = useState(null);
