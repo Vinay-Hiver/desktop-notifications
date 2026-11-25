@@ -16,8 +16,7 @@ import './NotificationTesterPage.css'
 
 /**
  * Prototype tool: fire sample desktop alerts per channel, following the PRD's alert cases
- * (incoming call; conversation assigned to you; new conversation waiting in an inbox; customer replied;
- * several messages in one conversation; several conversations waiting). Opens in its own tab.
+ * (incoming call; conversation assigned to you; customer replied). Opens in its own tab.
  * Honours the channel switches and "Show message preview" from Notifications Settings.
  */
 
@@ -34,19 +33,16 @@ const REPLIES: Record<string, string[]> = {
   'Slack Connect': ['Quick follow-up here', 'Two more users are seeing the same error', 'Any update on this?'],
 }
 
+// Every messaging channel alerts on two events only: assigned to you, and customer replied.
 const messagingSamples = (inbox: string, ch: string, noun = 'conversation'): Sample[] => {
   const all: Convo[] = (CHANNEL_CHATS as Record<string, Convo[]>)[inbox] || []
-  const waiting = all.filter((c) => c.view === 'Unassigned')
   const mine = all.filter((c) => c.view === 'Mine')
-  const [w, m0, m1] = [waiting[0], mine[0], mine[1] ?? mine[0]]
+  const [m0, m1] = [mine[0], mine[1] ?? mine[0]]
   const to = (c: Convo) => ({ inbox, view: c.view, conv: c.id })
   const replies = REPLIES[inbox] ?? ['Following up on this', 'Any news?', 'Can you check today?']
   return [
     { id: 'assigned', label: `New ${noun} assigned to you`, title: `New ${ch} · ${m0.name}`, body: m0.preview, target: to(m0) },
-    { id: 'waiting', label: `New ${noun} waiting in inbox`, title: `New ${ch} waiting in ${inbox}`, body: `${w.name}: ${w.preview}`, target: to(w) },
     { id: 'reply', label: 'Customer replied', title: `${m1.name} replied on ${ch}`, body: replies[2], target: to(m1), inject: [replies[2]] },
-    { id: 'burst', label: 'Several new messages', title: `${m0.name} · 3 new messages`, body: replies[2], target: to(m0), inject: replies },
-    { id: 'summary', label: `${waiting.length} ${noun}s waiting`, title: `${waiting.length} ${noun}s waiting in ${inbox}`, body: '', target: { inbox, view: 'Unassigned' } },
   ]
 }
 
@@ -63,7 +59,7 @@ const callSamples = (): Sample[] => {
 }
 
 type Email = { id: number; inbox: string; type: string; sender: string; subject: string; preview: string }
-// Email alerts only for assignment and customer replies (no "waiting in inbox": shared email inboxes are too busy).
+// Email: the same two events as the other channels (assigned to you, customer replied).
 const emailSamples = (): Sample[] => {
   const mine = (conversationsData as Email[]).filter((c) => c.inbox === 'Customer Support' && c.type === 'Mine')
   const [a, b] = [mine[0], mine[1] ?? mine[0]]
@@ -74,16 +70,16 @@ const emailSamples = (): Sample[] => {
   ]
 }
 
-// Email starts off until turned on in settings; the others start on.
-const isOff = (channels: Record<string, boolean>, id: string) => (channels[id] ?? id !== 'email') === false
+// Channels start on; off only when switched off in settings.
+const isOff = (channels: Record<string, boolean>, id: string) => channels[id] === false
 
 const CHANNELS: Channel[] = [
-  { id: 'voice', name: 'Voice', icon: voiceIcon, desc: 'Phone Support', samples: callSamples() },
+  { id: 'email', name: 'Email', icon: emailIcon, desc: 'Customer Support', samples: emailSamples() },
   { id: 'chat', name: 'Chat', icon: chatIcon, desc: 'Website Chat', samples: messagingSamples('Website Chat', 'chat', 'chat') },
+  { id: 'slack', name: 'Slack', icon: slackIcon, desc: 'Slack Connect', samples: messagingSamples('Slack Connect', 'Slack message') },
   { id: 'whatsapp', name: 'WhatsApp', icon: whatsappIcon, desc: 'WhatsApp Support', samples: messagingSamples('WhatsApp Support', 'WhatsApp message') },
   { id: 'sms', name: 'SMS', icon: smsIcon, desc: 'SMS Support', samples: messagingSamples('SMS Support', 'SMS') },
-  { id: 'slack', name: 'Slack', icon: slackIcon, desc: 'Slack Connect', samples: messagingSamples('Slack Connect', 'Slack message') },
-  { id: 'email', name: 'Email', icon: emailIcon, desc: 'Customer Support', samples: emailSamples() },
+  { id: 'voice', name: 'Voice', icon: voiceIcon, desc: 'Phone Support', samples: callSamples() },
 ]
 
 /** Open Hiver tabs (they announce themselves) and when each was last in front. */
@@ -128,12 +124,12 @@ export function NotificationTesterPage() {
   }, [])
 
   const enabled = load('dn.enabled', false)
-  const channels = load<Record<string, boolean>>('dn.channels', {})
+  const channels = load<Record<string, boolean>>('dn.channelsV2', {})
   const showText = load('dn.showPreview', false)
 
   function fire(ch: Channel, s: Sample) {
     // Read settings fresh on every send, in case they changed in the settings tab.
-    const channels = load<Record<string, boolean>>('dn.channels', {})
+    const channels = load<Record<string, boolean>>('dn.channelsV2', {})
     const showText = load('dn.showPreview', false)
     if (readPermission() !== 'granted') { setLast('Notifications aren’t allowed in this browser yet.'); return }
     if (isOff(channels, ch.id)) { setLast(`${ch.name} alerts are off in Notifications Settings, so nothing was sent.`); return }
@@ -172,12 +168,13 @@ export function NotificationTesterPage() {
         </label>
         {last && <div className="nt-last" role="status">{last}</div>}
 
+        <div className="nt-grid">
         {CHANNELS.map((ch) => {
           const off = isOff(channels, ch.id)
           return (
             <section className="nt-section" key={ch.id} aria-labelledby={`nt-${ch.id}`}>
               <div className="nt-section__head">
-                <img src={ch.icon} width={14} height={14} alt="" />
+                <img src={ch.icon} width={16} height={16} alt="" />
                 <h3 className="nt-section__title" id={`nt-${ch.id}`}>{ch.name}</h3>
                 <span className="nt-section__desc">{ch.desc}</span>
                 {off && <span className="nt-off">Off in settings</span>}
@@ -190,6 +187,7 @@ export function NotificationTesterPage() {
             </section>
           )
         })}
+        </div>
       </div>
     </div>
   )

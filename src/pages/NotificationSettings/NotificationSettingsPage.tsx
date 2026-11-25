@@ -49,8 +49,8 @@ const desktopChannels: { id: string; label: string; icon: IconName; description:
   { id: 'slack', label: 'Slack', icon: 'slack', description: '' },
 ]
 
-// Email starts off: shared email inboxes are busy, so alerts there are opt-in.
-const defaultChannels = (): Record<string, boolean> => ({ ...Object.fromEntries(desktopChannels.map((c) => [c.id, true])), email: false })
+// Every channel starts on, Email included.
+const defaultChannels = (): Record<string, boolean> => ({ ...Object.fromEntries(desktopChannels.map((c) => [c.id, true])), email: true })
 
 // Today's sound settings, unchanged (from the current Omni page).
 const soundGroups: { title: string; icon: IconName; info?: string; disabled?: boolean; rows: [string, boolean][] }[] = [
@@ -90,12 +90,12 @@ function AlertPreview({ showText }: { showText: boolean }) {
 }
 
 const channelRows: { id: string; label: string; icon: string }[] = [
-  { id: 'voice', label: 'Voice', icon: voiceIcon },
-  { id: 'slack', label: 'Slack', icon: slackIcon },
+  { id: 'email', label: 'Email', icon: emailIcon },
   { id: 'chat', label: 'Chat', icon: chatIcon },
+  { id: 'slack', label: 'Slack', icon: slackIcon },
   { id: 'whatsapp', label: 'WhatsApp', icon: whatsappIcon },
   { id: 'sms', label: 'SMS', icon: smsIcon },
-  { id: 'email', label: 'Email', icon: emailIcon },
+  { id: 'voice', label: 'Voice', icon: voiceIcon },
 ]
 
 export type NotificationSettingsPageProps = {
@@ -110,7 +110,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   const [simulation, setSimulation] = useState<Simulation>(() => load('dn.simulation', 'real'))
   const [simPermission, setSimPermission] = useState<Permission>(() => { const s = load<Simulation>('dn.simulation', 'real'); return load<Permission>('dn.simPermission', s === 'real' ? 'default' : s) })
   const [enabled, setEnabled] = useState<boolean>(() => load('dn.enabled', false))
-  const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channels', defaultChannels()))
+  const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channelsV2', defaultChannels()))
   const [showText, setShowText] = useState<boolean>(() => load('dn.showPreview', false))
   const [promptDismissed, setPromptDismissed] = useState<boolean>(() => load('dn.promptDismissed', false))
   const [asking, setAsking] = useState(false)
@@ -125,7 +125,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   const permission: Permission = simulation === 'real' ? realPermission : simPermission
 
   useEffect(() => save('dn.enabled', enabled), [enabled])
-  useEffect(() => save('dn.channels', channels), [channels])
+  useEffect(() => save('dn.channelsV2', channels), [channels])
   useEffect(() => save('dn.showPreview', showText), [showText])
   useEffect(() => save('dn.promptDismissed', promptDismissed), [promptDismissed])
   useEffect(() => save('dn.simulation', simulation), [simulation])
@@ -201,9 +201,9 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
 
   const renderChannel = (c: { id: string; label: string; icon: string }) => (
     <div className="dn-item" key={c.id}>
-      <span className="dn-item__icon"><img src={c.icon} width={14} height={14} alt="" /></span>
+      <span className="dn-item__icon"><img src={c.icon} width={16} height={16} alt="" /></span>
       <div className="dn-item__text"><span className="dn-item__title">{c.label}</span></div>
-      <Switch checked={channels[c.id] ?? c.id !== 'email'} onChange={(e) => setChannels({ ...channels, [c.id]: e.target.checked })} aria-label={`Desktop alerts for ${c.label}`} />
+      <Switch checked={channels[c.id] ?? true} onChange={(e) => setChannels({ ...channels, [c.id]: e.target.checked })} aria-label={`Desktop alerts for ${c.label}`} />
     </div>
   )
 
@@ -287,18 +287,13 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
                 <h3 className="dn-section__title" id="dn-channels-title">Channels</h3>
                 <div className="dn-box dn-box--channels">
                   <div className="dn-chgroup">
+                    <p className="dn-chgroup__desc">Alerts when a conversation is assigned to you or the customer replies</p>
+                    {channelRows.filter((c) => c.id !== 'voice').map((c, i) => <Fragment key={c.id}>{i > 0 && <hr className="dn-divider" />}{renderChannel(c)}</Fragment>)}
+                  </div>
+                  <hr className="dn-divider dn-divider--full" />
+                  <div className="dn-chgroup">
                     <p className="dn-chgroup__desc">Alerts when a call rings</p>
                     {channelRows.filter((c) => c.id === 'voice').map(renderChannel)}
-                  </div>
-                  <hr className="dn-divider" />
-                  <div className="dn-chgroup">
-                    <p className="dn-chgroup__desc">Alerts when a conversation is assigned to you, waits in your inbox, or the customer replies</p>
-                    {channelRows.filter((c) => c.id !== 'voice' && c.id !== 'email').map((c, i) => <Fragment key={c.id}>{i > 0 && <hr className="dn-divider" />}{renderChannel(c)}</Fragment>)}
-                  </div>
-                  <hr className="dn-divider" />
-                  <div className="dn-chgroup">
-                    <p className="dn-chgroup__desc">Alerts when an email is assigned to you or the customer replies</p>
-                    {channelRows.filter((c) => c.id === 'email').map(renderChannel)}
                   </div>
                 </div>
               </section>
