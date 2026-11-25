@@ -107,7 +107,7 @@ export type NotificationSettingsPageProps = {
 
 export function NotificationSettingsPage({ initialTab, onNavigate }: NotificationSettingsPageProps = {}) {
   const [realPermission, setRealPermission] = useState<Permission>(readPermission)
-  const [simulation, setSimulation] = useState<Simulation>(() => load('dn.simulation', 'real'))
+  const [simulation] = useState<Simulation>('real') // simulator controls removed: always the real browser permission
   const [simPermission, setSimPermission] = useState<Permission>(() => { const s = load<Simulation>('dn.simulation', 'real'); return load<Permission>('dn.simPermission', s === 'real' ? 'default' : s) })
   const [enabled, setEnabled] = useState<boolean>(() => load('dn.enabled', false))
   const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channelsV2', defaultChannels()))
@@ -128,7 +128,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   useEffect(() => save('dn.channelsV2', channels), [channels])
   useEffect(() => save('dn.showPreview', showText), [showText])
   useEffect(() => save('dn.promptDismissed', promptDismissed), [promptDismissed])
-  useEffect(() => save('dn.simulation', simulation), [simulation])
+  useEffect(() => save('dn.simulation', simulation), [simulation]) // clears any old simulated state
   useEffect(() => save('dn.simPermission', simPermission), [simPermission])
 
   // Permission can change in browser settings while Omni is open: re-check whenever the tab comes back.
@@ -190,11 +190,6 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
     if (prev === 'denied' && permission === 'granted') { setBlockedOnTry(false); setClosedPrompt(false); setEnabled(true); sendTest() }
   }, [permission, sendTest])
 
-  function resetPrototype() {
-    setEnabled(false); setPromptDismissed(false); setBlockedOnTry(false); setTestSent('none'); setShowText(false)
-    setChannels(defaultChannels())
-    if (simulation !== 'real') setSimPermission(simulation)
-  }
 
   const nav = <MainNav onChange={(id) => { if (id === 'conversations') onNavigate?.('home') }} items={navSampleItems} footerItems={navSampleFooterItems} user={{ initial: 'P', name: 'Praveen' }} userMenu={navSampleUserMenu} />
   const sidebar = <AdminSidebar title="My Settings" sections={mySettingsSections} value="notifications" />
@@ -347,20 +342,6 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
         </div>
       </div>
 
-      {/* Prototype-only controls, not part of the design */}
-      <aside className="dn-proto" aria-label="Prototype controls">
-        <div className="dn-proto__title">Prototype controls</div>
-        <label className="dn-proto__row">
-          <span>Browser permission</span>
-          <select value={simulation} onChange={(e) => { const v = e.target.value as Simulation; setSimulation(v); setSimPermission(v === 'real' ? 'default' : v); setBlockedOnTry(false) }}>
-            <option value="real">Real ({realPermission})</option>
-            <option value="default">Simulate not asked yet</option>
-            <option value="granted">Simulate allowed</option>
-            <option value="denied">Simulate blocked</option>
-          </select>
-        </label>
-        <Button variant="ghost" size="xs" onClick={resetPrototype}>Reset to first visit</Button>
-      </aside>
     </PageLayout>
   )
 }

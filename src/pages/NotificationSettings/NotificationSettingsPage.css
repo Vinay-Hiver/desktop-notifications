@@ -53,10 +53,6 @@
 .dn-banner--warning { background: var(--warningSurfaceSubtle); color: var(--warningTextBody); }
 
 /* Prototype-only controls */
-.dn-proto { position: fixed; right: var(--spacing4); bottom: var(--spacing4); display: flex; flex-direction: column; gap: var(--spacing2); padding: var(--spacing3); border-radius: var(--radius8); background: var(--slateSurfaceWhite); border: 1px dashed var(--slateBorderDark); font: var(--text-body-xs-regular); color: var(--slateTextSubtle); z-index: 10; }
-.dn-proto__title { font: var(--text-body-xs-semibold); color: var(--slateTextBody); text-transform: uppercase; letter-spacing: 0.04em; }
-.dn-proto__row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing2); }
-.dn-proto select { font: inherit; padding: 2px 4px; }
 
 /* Tabs under the page bar */
 .dn-tabs { max-width: 960px; }

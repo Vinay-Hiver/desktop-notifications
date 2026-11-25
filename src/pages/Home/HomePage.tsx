@@ -43,13 +43,6 @@ export function HomePage({ onOpenDesktopSettings, children }: HomePageProps) {
   }
 
   // Prototype only: forget the agent's earlier choice so the first-visit banner shows again.
-  function resetPrototype() {
-    const sim = load<string>('dn.simulation', 'real')
-    try { Object.keys(localStorage).filter((k) => k.startsWith('dn.')).forEach((k) => localStorage.removeItem(k)) } catch { /* ignore */ }
-    save('dn.simulation', sim)
-    if (sim !== 'real') save('dn.simPermission', sim)
-    setBanner('prompt')
-  }
 
   function close() {
     if (banner === 'prompt' || banner === 'closed-prompt') save('dn.promptDismissed', true)
@@ -93,11 +86,6 @@ export function HomePage({ onOpenDesktopSettings, children }: HomePageProps) {
 
       <div className="home-shell__main">{children}<CallStripHost /></div>
 
-      {/* Prototype-only control, not part of the design */}
-      <aside className="home-proto" aria-label="Prototype controls">
-        <span className="home-proto__title">Prototype</span>
-        <Button variant="ghost" size="xs" onClick={resetPrototype}>Show banner again</Button>
-      </aside>
     </div>
   )
 }

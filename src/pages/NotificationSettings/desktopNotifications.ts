@@ -16,7 +16,7 @@ export function readPermission(): Permission {
 
 /** The permission the prototype should act on: the real browser value, or a simulated one. */
 export function currentPermission(): Permission {
-  const sim = load<Simulation>('dn.simulation', 'real')
+  const sim = ('real' as Simulation)
   return sim === 'real' ? readPermission() : load<Permission>('dn.simPermission', sim)
 }
 
@@ -46,7 +46,7 @@ export function helpLink() {
 
 /** Asks for permission (real or simulated). Simulated "not asked yet" resolves to granted after a short pause. */
 export async function requestDesktopPermission(): Promise<Permission> {
-  const sim = load<Simulation>('dn.simulation', 'real')
+  const sim = ('real' as Simulation)
   if (sim === 'real') {
     if (!('Notification' in window)) return 'unsupported'
     return (await Notification.requestPermission()) as Permission
@@ -60,7 +60,7 @@ export async function requestDesktopPermission(): Promise<Permission> {
 
 /** Sends the PRD's test alert. Returns whether a real alert went out. */
 export function sendTestNotification(): 'sent' | 'simulated' {
-  const sim = load<Simulation>('dn.simulation', 'real')
+  const sim = ('real' as Simulation)
   if (sim === 'real' && readPermission() === 'granted') {
     new Notification('Desktop notifications are on', {
       body: "You'll be notified about incoming calls and messages here, even when Hiver is in the background.",

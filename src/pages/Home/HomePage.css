@@ -24,6 +24,4 @@
 .home-content__thread { flex: 1; min-width: 0; }
 
 /* Prototype-only control */
-.home-proto { position: fixed; right: var(--spacing4); bottom: var(--spacing4); display: flex; align-items: center; gap: var(--spacing2); padding: var(--spacing1) var(--spacing1) var(--spacing1) var(--spacing3); border-radius: var(--radius8); background: var(--slateSurfaceWhite); border: 1px dashed var(--slateBorderDark); z-index: 10; }
-.home-proto__title { font: var(--text-body-xs-semibold); color: var(--slateTextSubtle); text-transform: uppercase; letter-spacing: 0.04em; }
 .home-shell__main .app-container { height: 100%; width: 100%; }
