@@ -111,7 +111,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
   const [simPermission, setSimPermission] = useState<Permission>(() => { const s = load<Simulation>('dn.simulation', 'real'); return load<Permission>('dn.simPermission', s === 'real' ? 'default' : s) })
   const [enabled, setEnabled] = useState<boolean>(() => load('dn.enabled', false))
   const [channels, setChannels] = useState<Record<string, boolean>>(() => load('dn.channels', defaultChannels()))
-  const [showText, setShowText] = useState<boolean>(() => load('dn.showText', false))
+  const [showText, setShowText] = useState<boolean>(() => load('dn.showPreview', false))
   const [promptDismissed, setPromptDismissed] = useState<boolean>(() => load('dn.promptDismissed', false))
   const [asking, setAsking] = useState(false)
   const [blockedOnTry, setBlockedOnTry] = useState(false)
@@ -126,7 +126,7 @@ export function NotificationSettingsPage({ initialTab, onNavigate }: Notificatio
 
   useEffect(() => save('dn.enabled', enabled), [enabled])
   useEffect(() => save('dn.channels', channels), [channels])
-  useEffect(() => save('dn.showText', showText), [showText])
+  useEffect(() => save('dn.showPreview', showText), [showText])
   useEffect(() => save('dn.promptDismissed', promptDismissed), [promptDismissed])
   useEffect(() => save('dn.simulation', simulation), [simulation])
   useEffect(() => save('dn.simPermission', simPermission), [simPermission])

@@ -129,12 +129,12 @@ export function NotificationTesterPage() {
 
   const enabled = load('dn.enabled', false)
   const channels = load<Record<string, boolean>>('dn.channels', {})
-  const showText = load('dn.showText', false)
+  const showText = load('dn.showPreview', false)
 
   function fire(ch: Channel, s: Sample) {
     // Read settings fresh on every send, in case they changed in the settings tab.
     const channels = load<Record<string, boolean>>('dn.channels', {})
-    const showText = load('dn.showText', false)
+    const showText = load('dn.showPreview', false)
     if (readPermission() !== 'granted') { setLast('Notifications aren’t allowed in this browser yet.'); return }
     if (isOff(channels, ch.id)) { setLast(`${ch.name} alerts are off in Notifications Settings, so nothing was sent.`); return }
     const send = () => sendViaHiver({
